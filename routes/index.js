@@ -9,6 +9,18 @@ const GameResult = require("../models/GameResult");
 
 const { uploadImageToIPFS, uploadMetadataToIPFS } = require("../services/pinataService");
 
+
+router.post('/login', (req, res) => {
+  const { wallet } = req.body;
+  if (!wallet) return res.status(400).send("Wallet address required");
+
+  req.session.walletAddress = wallet.toLowerCase();
+  console.log("🟢 Session after login:", req.session); // add this line
+  res.send({ message: "Logged in", wallet });
+});
+
+
+
 // --- Home ---
 router.get("/", (req, res) => {
   res.render("pages/home");
@@ -49,7 +61,7 @@ const { ensureWallet } = require("../middlewares/auth");
 
 router.get("/dashboard", ensureWallet, async (req, res) => {
   try {
-    const wallet = req.session.wallet.toLowerCase();
+    const wallet = req.session.walletAddress = wallet.toLowerCase();
     const user = await User.findOne({ walletAddress: wallet }).populate("nftsOwned");
     if (!user) return res.redirect("/");
 

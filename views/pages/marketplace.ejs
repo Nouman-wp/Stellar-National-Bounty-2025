@@ -48,7 +48,22 @@
 
     <!-- NFT Grid -->
     <div id="nftGrid" class="nft-grid">
-      <!-- NFT items will be populated by JavaScript -->
+<div id="nftGrid" class="nft-grid">
+  <% nfts.forEach(nft => { %>
+    <div class="nft-card">
+      <img src="<%= nft.imageUrl %>" alt="<%= nft.name %>">
+      <div class="nft-info">
+        <h3><%= nft.name %></h3>
+        <p>Price: <%= nft.price %> ETH</p>
+        <form action="/buy" method="POST">
+          <input type="hidden" name="nftId" value="<%= nft._id %>">
+          <button type="submit" class="btn btn-buy">Buy</button>
+        </form>
+      </div>
+    </div>
+  <% }); %>
+</div>
+
     </div>
 
     <!-- Load More -->

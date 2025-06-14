@@ -119,156 +119,129 @@
   let currentWalletAddress = '';
 
   async function connectWallet() {
+    if (!window.ethereum) {
+      showNotification("MetaMask not found. Install it to continue.", "error");
+      return;
+    }
+
+    try {
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      const walletAddress = accounts[0];
+      currentWalletAddress = walletAddress;
+
+      // Update UI
+      updateWalletUI(walletAddress);
+
+      // Login with backend session
+      const res = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ walletAddress })
+      });
+
+      if (!res.ok) throw new Error("Login failed");
+
+      const data = await res.json();
+      console.log("User session created:", data);
+
+      showNotification("Wallet connected successfully!", "success");
+
+      // Optional: redirect if needed
+      if (data.redirectToDashboard) {
+        window.location.href = "/dashboard";
+      }
+
+    } catch (err) {
+      console.error("Auth error:", err);
+      showNotification("Wallet connection failed. Please try again.", "error");
+    }
+  }
+
+  function updateWalletUI(walletAddress) {
+    const profileImageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`;
+    const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    const mediumAddress = `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}`;
+
+    document.getElementById("connectBtn").style.display = "none";
+    document.getElementById("walletProfile").classList.remove("hidden");
+
+    document.getElementById("profileImage").src = profileImageUrl;
+    document.getElementById("profileImageLarge").src = profileImageUrl;
+    document.getElementById("walletAddress").textContent = shortAddress;
+    document.getElementById("walletAddressFull").textContent = mediumAddress;
+  }
+
+  function disconnectWallet() {
+    fetch("/auth/logout").then(() => {
+      // Clear UI
+      currentWalletAddress = '';
+      document.getElementById("connectBtn").style.display = "flex";
+      document.getElementById("walletProfile").classList.add("hidden");
+      document.getElementById("walletDropdown").classList.add("hidden");
+      document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
+
+      showNotification("Wallet disconnected", "info");
+    });
+  }
+
+  async function checkWalletConnection() {
     if (window.ethereum) {
       try {
-        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-        const walletAddress = accounts[0];
-        currentWalletAddress = walletAddress;
-
-        // Generate profile image based on wallet address
-        const profileImageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`;
-        
-        // Update UI elements
-        document.getElementById("connectBtn").style.display = "none";
-        const walletProfile = document.getElementById("walletProfile");
-        
-        // Update profile images
-        document.getElementById("profileImage").src = profileImageUrl;
-        document.getElementById("profileImageLarge").src = profileImageUrl;
-        
-        // Update wallet addresses
-        const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-        const mediumAddress = `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}`;
-        document.getElementById("walletAddress").textContent = shortAddress;
-        document.getElementById("walletAddressFull").textContent = mediumAddress;
-        
-        walletProfile.classList.remove("hidden");
-        
-        // Show success notification
-        showNotification("Wallet connected successfully!", "success");
-        
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        if (accounts.length > 0) {
+          currentWalletAddress = accounts[0];
+          updateWalletUI(currentWalletAddress);
+        }
       } catch (err) {
-        showNotification("Wallet connection failed. Please try again.", "error");
-        console.error(err);
+        console.error("Wallet check failed:", err);
       }
-    } else {
-      showNotification("MetaMask is not installed! Please install MetaMask to connect your wallet.", "error");
     }
   }
 
   function toggleWalletMenu() {
     const walletDropdown = document.getElementById("walletDropdown");
-    const dropdownArrow = document.querySelector(".dropdown-arrow");
     const walletProfile = document.getElementById("walletProfile");
-    
-    if (walletDropdown.classList.contains("hidden")) {
-      // Position dropdown below wallet profile
-      const rect = walletProfile.getBoundingClientRect();
-      const walletMenu = walletDropdown.querySelector(".wallet-menu");
-      
-      walletMenu.style.position = "absolute";
-      walletMenu.style.top = (rect.bottom + 10) + "px";
-      walletMenu.style.right = (window.innerWidth - rect.right) + "px";
-      walletMenu.style.zIndex = "999999";
-      
-      walletDropdown.classList.remove("hidden");
-      dropdownArrow.classList.add("rotated");
-    } else {
-      walletDropdown.classList.add("hidden");
-      dropdownArrow.classList.remove("rotated");
-    }
-  }
+    const dropdownArrow = document.querySelector(".dropdown-arrow");
 
-  function disconnectWallet() {
-    // Reset UI
-    document.getElementById("connectBtn").style.display = "flex";
-    document.getElementById("walletProfile").classList.add("hidden");
-    document.getElementById("walletDropdown").classList.add("hidden");
-    document.querySelector(".dropdown-arrow").classList.remove("rotated");
-    
-    // Reset data
-    currentWalletAddress = '';
-    
-    showNotification("Wallet disconnected", "info");
+    const rect = walletProfile.getBoundingClientRect();
+    const walletMenu = walletDropdown.querySelector(".wallet-menu");
+    walletMenu.style.position = "absolute";
+    walletMenu.style.top = (rect.bottom + 10) + "px";
+    walletMenu.style.right = (window.innerWidth - rect.right) + "px";
+    walletMenu.style.zIndex = "99999";
+
+    walletDropdown.classList.toggle("hidden");
+    dropdownArrow.classList.toggle("rotated");
   }
 
   function copyWalletAddress() {
-    if (currentWalletAddress) {
-      navigator.clipboard.writeText(currentWalletAddress).then(() => {
-        showNotification("Wallet address copied to clipboard!", "success");
-        
-        // Visual feedback on copy button
-        const copyBtn = document.querySelector(".copy-btn");
-        const originalText = copyBtn.innerHTML;
-        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-        copyBtn.style.background = "#10b981";
-        
-        setTimeout(() => {
-          copyBtn.innerHTML = originalText;
-          copyBtn.style.background = "";
-        }, 2000);
-      }).catch(() => {
-        showNotification("Failed to copy address", "error");
-      });
-    }
+    if (!currentWalletAddress) return;
+
+    navigator.clipboard.writeText(currentWalletAddress).then(() => {
+      showNotification("Wallet address copied!", "success");
+      const copyBtn = document.querySelector(".copy-btn");
+      const originalHTML = copyBtn.innerHTML;
+      copyBtn.innerHTML = `<i class="fas fa-check"></i> Copied!`;
+      copyBtn.style.background = "#10b981";
+
+      setTimeout(() => {
+        copyBtn.innerHTML = originalHTML;
+        copyBtn.style.background = "";
+      }, 2000);
+    }).catch(() => {
+      showNotification("Failed to copy address", "error");
+    });
   }
 
   function toggleMobileMenu() {
     document.getElementById("mobileMenu").classList.toggle("open");
   }
 
-  // Auto-check if already connected
-  window.addEventListener("load", async () => {
-    if (window.ethereum) {
-      try {
-        const accounts = await ethereum.request({ method: 'eth_accounts' });
-        if (accounts.length > 0) {
-          const walletAddress = accounts[0];
-          currentWalletAddress = walletAddress;
-          
-          const profileImageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`;
-          
-          document.getElementById("connectBtn").style.display = "none";
-          const walletProfile = document.getElementById("walletProfile");
-          
-          document.getElementById("profileImage").src = profileImageUrl;
-          document.getElementById("profileImageLarge").src = profileImageUrl;
-          
-          const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-          const mediumAddress = `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}`;
-          document.getElementById("walletAddress").textContent = shortAddress;
-          document.getElementById("walletAddressFull").textContent = mediumAddress;
-          
-          walletProfile.classList.remove("hidden");
-        }
-      } catch (error) {
-        console.error("Error checking wallet connection:", error);
-      }
-    }
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener("click", function(event) {
-    const walletSection = document.querySelector(".wallet-section");
-    const walletDropdown = document.getElementById("walletDropdown");
-    const walletProfile = document.getElementById("walletProfile");
-    
-    if (!walletSection.contains(event.target) && !walletDropdown.contains(event.target)) {
-      walletDropdown.classList.add("hidden");
-      if (walletProfile) {
-        document.querySelector(".dropdown-arrow").classList.remove("rotated");
-      }
-    }
-  });
-
-  // Search Modal Functions
   function openSearchModal() {
     const modal = document.getElementById("searchModal");
     modal.style.display = "flex";
     document.body.style.overflow = "hidden";
-    setTimeout(() => {
-      document.getElementById("globalSearch").focus();
-    }, 100);
+    setTimeout(() => document.getElementById("globalSearch").focus(), 100);
   }
 
   function closeSearchModal() {
@@ -281,48 +254,50 @@
 
   function performSearch(value) {
     const results = document.getElementById("searchResults");
-    if (value.trim() === "") {
-      results.innerHTML = "";
-    } else {
-      results.innerHTML = `<p>Searching for: <strong>${value}</strong></p>`;
-    }
+    results.innerHTML = value.trim()
+      ? `<p>Searching for: <strong>${value}</strong></p>`
+      : "";
   }
 
-  // Notification system
-  function showNotification(message, type = 'info') {
-    // Remove existing notification
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-      existingNotification.remove();
-    }
+  function showNotification(message, type = "info") {
+    const existing = document.querySelector(".notification");
+    if (existing) existing.remove();
 
-    const notification = document.createElement('div');
+    const notification = document.createElement("div");
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
-      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <i class="fas fa-${type === "success" ? "check-circle" : type === "error" ? "exclamation-circle" : "info-circle"}"></i>
       <span>${message}</span>
     `;
-    
+
     document.body.appendChild(notification);
-    
-    // Show notification
-    setTimeout(() => notification.classList.add('show'), 100);
-    
-    // Hide notification after 4 seconds
+    setTimeout(() => notification.classList.add("show"), 100);
     setTimeout(() => {
-      notification.classList.remove('show');
+      notification.classList.remove("show");
       setTimeout(() => notification.remove(), 300);
     }, 4000);
   }
 
-  // Keyboard shortcuts
-  document.addEventListener("keydown", function(event) {
+  // Close dropdown on outside click
+  document.addEventListener("click", (event) => {
+    const walletSection = document.querySelector(".wallet-section");
+    const walletDropdown = document.getElementById("walletDropdown");
+    if (!walletSection.contains(event.target)) {
+      walletDropdown.classList.add("hidden");
+      document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeSearchModal();
       document.getElementById("walletDropdown").classList.add("hidden");
       document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
     }
   });
+
+  // Auto check wallet on page load
+  window.addEventListener("load", checkWalletConnection);
 </script>
 
 <style>

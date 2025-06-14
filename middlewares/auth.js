@@ -1,16 +1,9 @@
-function ensureWallet(req, res, next) {
-  if (req.session && req.session.wallet) return next();
-  res.redirect('/');
-}
 
-// middlewares/auth.js
-exports.ensureWallet = (req, res, next) => {
-  if (!req.session || !req.session.wallet) {
-    return res.redirect("/"); // or res.status(401).send("Not logged in")
+module.exports.ensureWallet = (req, res, next) => {
+  if (req.session.walletAddress) {
+    return next();
   }
-  next();
+  return res.redirect('/');
 };
 
-
-module.exports = { ensureWallet };
 

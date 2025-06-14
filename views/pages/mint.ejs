@@ -1,19 +1,134 @@
-<%- include('../partials/header', { title: 'NFT Marketplace - AniVerse' }) %>
-<%- include('../partials/navbar', { currentPage: 'marketplace' }) %>
+<%- include('../partials/header', { title: 'Mint NFT - AniVerse Marketplace' }) %>
+<%- include('../partials/navbar', { currentPage: 'mint' }) %>
 
-<h2 style="text-align:center;">Mint New NFT</h2>
-<div class="container">
+<div class="mint-container" style="max-width: 800px; margin: auto; padding: 2rem;">
+  <h1 style="text-align:center; margin-bottom: 2rem;">🪙 Mint a New NFT</h1>
 
+  <form action="/mint" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1.5rem;">
     
-<form action="/mint" method="POST" enctype="multipart/form-data">
-    <input type="text" name="name" placeholder="NFT Name" required /><br /><br />
-    <textarea name="description" placeholder="Description" required></textarea><br /><br />
-    <input type="number" name="tokenId" placeholder="Token ID" required /><br /><br />
-    <input type="text" name="owner" placeholder="Wallet Address" required /><br /><br />
-    <input type="text" name="rarity" placeholder="common/epic/rare/Legendry" required /><br /><br />
-    <button type="submit">Mint NFT</button>
-  <input type="file" name="nftImage" accept="image/*" required /><br /><br />
-</form>
+    <div>
+      <label for="name"><strong>NFT Name:</strong></label><br />
+      <input type="text" name="name" id="name" placeholder="e.g. Sukuna's Curse Mark" required class="form-control" />
+    </div>
+
+    <div>
+      <label for="description"><strong>Description:</strong></label><br />
+      <textarea name="description" id="description" placeholder="Describe the NFT..." required class="form-control" style="height:100px;"></textarea>
+    </div>
+
+    <div>
+      <label for="tokenId"><strong>Token ID:</strong></label><br />
+      <input type="number" name="tokenId" id="tokenId" placeholder="Unique Token ID" required class="form-control" />
+    </div>
+
+    <div>
+      <label for="owner"><strong>Wallet Address:</strong></label><br />
+      <input type="text" name="owner" id="owner" placeholder="e.g. 0xABC123..." required class="form-control" />
+    </div>
+
+    <div>
+      <label for="rarity"><strong>Rarity:</strong></label><br />
+      <select name="rarity" id="rarity" required class="form-control">
+        <option value="">-- Select Rarity --</option>
+        <option value="Common">Common</option>
+        <option value="Rare">Rare</option>
+        <option value="Epic">Epic</option>
+        <option value="Legendary">Legendary</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="price"><strong>Price (in MON):</strong></label><br />
+      <input type="number" step="0.01" name="price" id="price" placeholder="Optional (0 means not for sale)" class="form-control" />
+    </div>
+
+    <div>
+      <label for="nftcollection"><strong>Collection:</strong></label><br />
+      <input type="text" name="nftcollection" id="nftcollection" placeholder="e.g. Jujutsu Collection" class="form-control" />
+    </div>
+
+    <div>
+      <label for="nftImage"><strong>NFT Image:</strong></label><br />
+      <input type="file" name="nftImage" id="nftImage" accept="image/*" required class="form-control" />
+    </div>
+
+    <button type="submit" class="btn" style="padding: 0.75rem 1.5rem; background: #6f42c1; color: white; border: none; border-radius: 6px; font-size: 1rem;">
+      🚀 Mint NFT
+    </button>
+  </form>
 </div>
+
+<style>
+  .mint-container {
+    background: #1b1b2f;
+    padding: 2rem;
+    border-radius: 12px;
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  }
+
+  .mint-container h1 {
+    color: #ffd369;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  .mint-container .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    background: #2e2e48;
+    color: #fff;
+    border: 1px solid #444;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+
+  .mint-container .form-control:focus {
+    border-color: #ffd369;
+    outline: none;
+    background: #3a3a5c;
+  }
+
+  .mint-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #ccc;
+    font-weight: 500;
+  }
+
+  .mint-container textarea.form-control {
+    resize: vertical;
+  }
+
+  .mint-container .btn {
+    background: #ff4c60;
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    margin-top: 1rem;
+  }
+
+  .mint-container .btn:hover {
+    background: #e04355;
+  }
+
+  .mint-container input[type="file"] {
+    background-color: #2e2e48;
+    color: #ccc;
+    padding: 0.5rem;
+  }
+
+  .mint-container option {
+    background: #1b1b2f;
+    color: #eee;
+  }
+</style>
+
 
 <%- include('../partials/footer') %>

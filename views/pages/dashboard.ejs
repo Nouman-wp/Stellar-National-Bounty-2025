@@ -1,59 +1,56 @@
-<%- include('../partials/header', { title: 'User Dashboard - Jujutsu Arena' }) %>
-<%- include('../partials/navbar', { currentPage: 'dashboard' }) %>
+<%- include('../partials/header', { title: 'Dashboard' }) %>
+<%- include('../partials/navbar', { currentPage: 'User Dashboard' }) %>
 
 <div class="dashboard-container" style="max-width: 1000px; margin: auto; padding: 2rem;">
-  <h1>Welcome to Jujutsu Arena Dashboard</h1>
+  <h1 style="color: #fff; font-size: 2.5rem;">👤 Welcome, Caspian_wp</h1>
 
-  <div class="card" style="background:#1e1e2f; padding: 1.5rem; margin-top: 2rem; border-radius: 12px;">
-    <h3>User Info</h3>
-    <p><strong>Wallet Address:</strong> <%= user.walletAddress %></p>
-    <p><strong>Username:</strong> <%= user.username || 'Not set' %></p>
-    <p><strong>Total XP:</strong> <%= user.xp %> XP</p>
-    <p><strong>Monad Balance:</strong> <%= monadBalance %> MON</p>
+  <div class="card" style="background:#1e1e2f; padding: 1.5rem; margin-top: 2rem; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.5);">
+    <h3 style="color: #fff;">🧾 Profile Summary</h3>
+    <p style="color: #aaa;"><strong>Wallet Address:</strong> <code style="color: #6cf;">0x6453EabD43c700363d01A06a782231715514cD72</code></p>
+    <p style="color: #aaa;"><strong>Total XP:</strong> <span style="color: #ffd700;">1,820 XP</span></p>
+    <p style="color: #aaa;"><strong>Monad Balance:</strong> <span style="color: #0f0;">$0.13 (6.9985 MON)</span></p>
   </div>
 
   <div class="card" style="background:#2b2b3c; padding: 1.5rem; margin-top: 2rem; border-radius: 12px;">
-    <h3>Owned NFTs</h3>
-    <% if (user.nftsOwned.length > 0) { %>
-      <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-        <% user.nftsOwned.forEach(nft => { %>
-          <div style="background: #121212; padding: 1rem; border-radius: 8px; width: 150px; text-align: center;">
-            <img src="<%= nft.imageURL %>" alt="<%= nft.name %>" style="width:100%; border-radius: 6px;" />
-            <p style="margin-top: 0.5rem;"><%= nft.name %></p>
-          </div>
-        <% }) %>
+    <h3 style="color: #fff;">🎮 Recently Played Games</h3>
+    <table style="width: 100%; border-collapse: collapse; color: #eee; margin-top: 1rem;">
+      <thead>
+        <tr>
+          <th style="border-bottom: 1px solid #444; padding: 0.5rem;">Game</th>
+          <th style="border-bottom: 1px solid #444; padding: 0.5rem;">Score</th>
+          <th style="border-bottom: 1px solid #444; padding: 0.5rem;">XP Earned</th>
+          <th style="border-bottom: 1px solid #444; padding: 0.5rem;">Played On</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 0.5rem;">Jujutsu Arena</td>
+          <td style="padding: 0.5rem;">980</td>
+          <td style="padding: 0.5rem;">98 XP</td>
+          <td style="padding: 0.5rem;">June 13, 2025, 4:45 PM</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5rem;">Shinigami Puzzle Trials</td>
+          <td style="padding: 0.5rem;">560</td>
+          <td style="padding: 0.5rem;">56 XP</td>
+          <td style="padding: 0.5rem;">June 12, 2025, 9:12 PM</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="background:#2b2b3c; padding: 1.5rem; margin-top: 2rem; border-radius: 12px;">
+    <h3 style="color: #fff;">🖼️ Owned NFTs</h3>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+      <div style="background: #121212; padding: 1rem; border-radius: 8px; width: 150px; text-align: center;">
+        <img src="https://wallpapers.com/images/featured/sukuna-pictures-xjixgtkkwa2ovcwy.jpg" alt="Ryomen Sukuna" style="width:100%; border-radius: 6px;" />
+        <p style="margin-top: 0.5rem; color: #ddd;">Ryomen Sukuna</p>
       </div>
-    <% } else { %>
-      <p>No NFTs owned yet.</p>
-    <% } %>
-  </div>
-
-  <div class="card" style="background:#2b2b3c; padding: 1.5rem; margin-top: 2rem; border-radius: 12px;">
-    <h3>Game History</h3>
-    <% if (results.length > 0) { %>
-      <table style="width: 100%; border-collapse: collapse; color: #eee;">
-        <thead>
-          <tr>
-            <th style="border-bottom: 1px solid #444; padding: 0.5rem;">Game</th>
-            <th style="border-bottom: 1px solid #444; padding: 0.5rem;">Score</th>
-            <th style="border-bottom: 1px solid #444; padding: 0.5rem;">XP Earned</th>
-            <th style="border-bottom: 1px solid #444; padding: 0.5rem;">Timestamp</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% results.forEach(result => { %>
-            <tr>
-              <td style="padding: 0.5rem;"><%= result.gameName %></td>
-              <td style="padding: 0.5rem;"><%= result.score || 'N/A' %></td>
-              <td style="padding: 0.5rem;"><%= result.xpEarned %></td>
-              <td style="padding: 0.5rem;"><%= new Date(result.timestamp).toLocaleString() %></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    <% } else { %>
-      <p>No games played yet.</p>
-    <% } %>
+      <div style="background: #121212; padding: 1rem; border-radius: 8px; width: 150px; text-align: center;">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8omTmLJiG7GwAOSfzvCR4hBcTpPHwV1AaPQ&s" alt="Gojo Satoru" style="width:100%; border-radius: 6px;" />
+        <p style="margin-top: 0.5rem; color: #ddd;">Gojo Satoru</p>
+      </div>
+    </div>
   </div>
 </div>
 
