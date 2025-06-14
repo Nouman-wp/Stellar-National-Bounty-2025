@@ -1,0 +1,1190 @@
+<%- include('../partials/header', { title: 'GameZone - AniVerse' }) %>
+<%- include('../partials/navbar', { currentPage: 'gamezone' }) %>
+
+<style>
+/* Enhanced GameZone Styles */
+.page-container {
+  background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+  min-height: 100vh;
+  padding: 2rem 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1), rgba(59, 130, 246, 0.1));
+  border-radius: 20px;
+  border: 1px solid rgba(147, 51, 234, 0.2);
+}
+
+.page-header h1 {
+  color: #9333ea;
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 30px rgba(147, 51, 234, 0.5);
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.page-header p {
+  color: #cbd5e1;
+  font-size: 1.3rem;
+  opacity: 0.9;
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 20px rgba(147, 51, 234, 0.5), 0 0 30px rgba(147, 51, 234, 0.4); }
+  to { text-shadow: 0 0 30px rgba(147, 51, 234, 0.8), 0 0 40px rgba(147, 51, 234, 0.6); }
+}
+
+.gamezone-layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.gamezone-main {
+  background: rgba(17, 24, 39, 0.6);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.category-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background: rgba(31, 41, 55, 0.8);
+  border-radius: 15px;
+  border: 1px solid rgba(107, 114, 128, 0.3);
+}
+
+.category-btn {
+  padding: 0.8rem 1.5rem;
+  background: rgba(55, 65, 81, 0.8);
+  border: 1px solid rgba(107, 114, 128, 0.4);
+  border-radius: 10px;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.category-btn:hover::before {
+  left: 100%;
+}
+
+.category-btn:hover {
+  background: rgba(75, 85, 99, 0.8);
+  border-color: rgba(147, 51, 234, 0.6);
+  color: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+.category-btn.active {
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
+  border-color: #9333ea;
+  color: white;
+  box-shadow: 0 4px 15px rgba(147, 51, 234, 0.4);
+  transform: translateY(-2px);
+}
+
+.featured-games, .all-games {
+  margin-bottom: 3rem;
+}
+
+.featured-games h2, .all-games h2 {
+  color: #e2e8f0;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.featured-games h2 i {
+  color: #fbbf24;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+.all-games h2 i {
+  color: #9333ea;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.games-grid.featured {
+  margin-bottom: 2rem;
+}
+
+.game-card {
+  background: linear-gradient(145deg, rgba(31, 41, 55, 0.9), rgba(17, 24, 39, 0.9));
+  border: 1px solid rgba(75, 85, 99, 0.4);
+  border-radius: 15px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #9333ea, #3b82f6, #10b981);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover::before {
+  transform: scaleX(1);
+}
+
+.game-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(147, 51, 234, 0.2);
+  border-color: rgba(147, 51, 234, 0.6);
+}
+
+.game-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.game-card:hover img {
+  transform: scale(1.05);
+}
+
+.game-card h3 {
+  color: #e2e8f0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.game-card p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.game-card small {
+  color: #64748b;
+  font-size: 0.8rem;
+  display: block;
+  margin-bottom: 0.3rem;
+}
+
+.game-card strong {
+  color: #10b981;
+  font-weight: 600;
+  display: block;
+  margin: 0.8rem 0;
+}
+
+.play-btn {
+  width: 100%;
+  padding: 0.8rem;
+  background: linear-gradient(135deg, #9333ea, #7c3aed);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.play-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.play-btn:hover::before {
+  left: 100%;
+}
+
+.play-btn:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.4);
+}
+
+.gamezone-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.sidebar-card {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(75, 85, 99, 0.4);
+  border-radius: 15px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-card h3 {
+  color: #e2e8f0;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-card h3 i {
+  color: #fbbf24;
+}
+
+.leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.leaderboard-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(31, 41, 55, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  transition: all 0.3s ease;
+}
+
+.leaderboard-item:hover {
+  background: rgba(31, 41, 55, 0.8);
+  transform: translateX(5px);
+}
+
+.leaderboard-item.rank-1 {
+  border-color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+}
+
+.leaderboard-item.rank-2 {
+  border-color: #94a3b8;
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.2);
+}
+
+.leaderboard-item.rank-3 {
+  border-color: #f97316;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.2);
+}
+
+.rank {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #fbbf24;
+  min-width: 30px;
+  text-align: center;
+}
+
+.player-info {
+  flex: 1;
+}
+
+.player-name {
+  color: #e2e8f0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.player-score {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.player-avatar {
+  font-size: 1.5rem;
+}
+
+.challenges {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.challenge-item {
+  padding: 1rem;
+  background: rgba(31, 41, 55, 0.6);
+  border-radius: 10px;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  transition: all 0.3s ease;
+}
+
+.challenge-item.active {
+  border-color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.challenge-item:hover {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.challenge-title {
+  color: #e2e8f0;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.challenge-reward {
+  color: #10b981;
+  font-size: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(55, 65, 81, 0.8);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.3rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  color: #94a3b8;
+  font-size: 0.7rem;
+  text-align: right;
+}
+
+/* Game Modal Styles */
+.game-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(5px);
+}
+
+.game-modal-content {
+  width: 90%;
+  max-width: 1000px;
+  background: #111;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.game-modal .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 30px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.5);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.game-modal .close-btn:hover {
+  background: rgba(147, 51, 234, 0.8);
+  transform: scale(1.1);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Loading Animation */
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(147, 51, 234, 0.3);
+  border-radius: 50%;
+  border-top-color: #9333ea;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .gamezone-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .gamezone-sidebar {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .page-header p {
+    font-size: 1.1rem;
+  }
+  
+  .category-filter {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .games-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .game-modal-content {
+    width: 95%;
+    margin: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: 1.5rem 1rem;
+  }
+  
+  .gamezone-main {
+    padding: 1rem;
+  }
+  
+  .sidebar-card {
+    padding: 1rem;
+  }
+}
+
+/* Enhanced Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.game-card {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.game-card:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.game-card:nth-child(even) {
+  animation-delay: 0.2s;
+}
+
+/* Status Indicators */
+.status-online {
+  color: #10b981;
+}
+
+.status-busy {
+  color: #f59e0b;
+}
+
+.status-offline {
+  color: #6b7280;
+}
+</style>
+
+<div class="page-container">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>🎮 GameZone</h1>
+      <p>Play games, earn rewards, and climb the leaderboards</p>
+    </div>
+
+    <div class="gamezone-layout">
+      <!-- Main Content -->
+      <div class="gamezone-main">
+        <!-- Category Filter -->
+        <div class="category-filter">
+          <button class="category-btn active" data-category="all" onclick="filterGames('all')">
+            🎯 All Games
+          </button>
+          <button class="category-btn" data-category="action" onclick="filterGames('action')">
+            ⚔️ Action
+          </button>
+          <button class="category-btn" data-category="strategy" onclick="filterGames('strategy')">
+            🧠 Strategy
+          </button>
+          <button class="category-btn" data-category="rpg" onclick="filterGames('rpg')">
+            🏰 RPG
+          </button>
+          <button class="category-btn" data-category="arcade" onclick="filterGames('arcade')">
+            🕹️ Arcade
+          </button>
+          <button class="category-btn" data-category="puzzle" onclick="filterGames('puzzle')">
+            🧩 Puzzle
+          </button>
+        </div>
+
+        <!-- Game Stats -->
+        <div class="game-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <div style="background: rgba(31, 41, 55, 0.8); padding: 1.5rem; border-radius: 10px; text-align: center; border: 1px solid rgba(16, 185, 129, 0.3);">
+            <div style="font-size: 2rem; color: #10b981; font-weight: 700;">6</div>
+            <div style="color: #94a3b8; font-size: 0.9rem;">Total Games</div>
+          </div>
+          <div style="background: rgba(31, 41, 55, 0.8); padding: 1.5rem; border-radius: 10px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.3);">
+            <div style="font-size: 2rem; color: #3b82f6; font-weight: 700;">1</div>
+            <div style="color: #94a3b8; font-size: 0.9rem;">Active Players</div>
+          </div>
+          <div style="background: rgba(31, 41, 55, 0.8); padding: 1.5rem; border-radius: 10px; text-align: center; border: 1px solid rgba(251, 191, 36, 0.3);">
+            <div style="font-size: 2rem; color: #fbbf24; font-weight: 700;">0.0</div>
+            <div style="color: #94a3b8; font-size: 0.9rem;">ANIVERSE Earned Today</div>
+          </div>
+        </div>
+
+        <!-- Featured Games -->
+        <section class="featured-games">
+          <h2><i class="fas fa-star"></i> Featured Games</h2>
+          <div id="featuredGames" class="games-grid featured">
+            <!-- Featured games will be populated by JavaScript -->
+          </div>
+        </section>
+
+        <!-- All Games -->
+        <section class="all-games">
+          <h2><i class="fas fa-gamepad"></i> All Games</h2>
+          <div id="allGames" class="games-grid">
+            <!-- All games will be populated by JavaScript -->
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="gamezone-sidebar">
+        <!-- Leaderboard -->
+        <div class="sidebar-card">
+          <h3><i class="fas fa-trophy"></i> Top Players</h3>
+          <div class="leaderboard">
+            <div class="leaderboard-item rank-1">
+              <div class="rank">1</div>
+              <div class="player-info">
+                <div class="player-name">DragonMaster</div>
+                <div class="player-score">15,420 pts</div>
+              </div>
+              <div class="player-avatar">🐉</div>
+            </div>
+            
+            <div class="leaderboard-item rank-2">
+              <div class="rank">2</div>
+              <div class="player-info">
+                <div class="player-name">NinjaKing</div>
+                <div class="player-score">14,200 pts</div>
+              </div>
+              <div class="player-avatar">🥷</div>
+            </div>
+            
+            <div class="leaderboard-item rank-3">
+              <div class="rank">3</div>
+              <div class="player-info">
+                <div class="player-name">MysticSage</div>
+                <div class="player-score">13,800 pts</div>
+              </div>
+              <div class="player-avatar">🧙‍♂️</div>
+            </div>
+            
+            <div class="leaderboard-item">
+              <div class="rank">4</div>
+              <div class="player-info">
+                <div class="player-name">CrystalHunter</div>
+                <div class="player-score">12,900 pts</div>
+              </div>
+              <div class="player-avatar">💎</div>
+            </div>
+            
+            <div class="leaderboard-item">
+              <div class="rank">5</div>
+              <div class="player-info">
+                <div class="player-name">SamuraiLord</div>
+                <div class="player-score">12,500 pts</div>
+              </div>
+              <div class="player-avatar">⚔️</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Daily Challenges -->
+        <div class="sidebar-card">
+          <h3><i class="fas fa-bolt"></i> Daily Challenges</h3>
+          <div class="challenges">
+            <div class="challenge-item active">
+              <div class="challenge-info">
+                <div class="challenge-title">🏆 Win 3 Battles</div>
+                <div class="challenge-reward">Reward: 100 ANIVERSE</div>
+              </div>
+              <div class="challenge-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 66%;"></div>
+                </div>
+                <div class="progress-text">2/3 completed</div>
+              </div>
+            </div>
+            
+            <div class="challenge-item">
+              <div class="challenge-info">
+                <div class="challenge-title">🎮 Play 5 Games</div>
+                <div class="challenge-reward">Reward: 50 ANIVERSE</div>
+              </div>
+              <div class="challenge-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 80%;"></div>
+                </div>
+                <div class="progress-text">4/5 completed</div>
+              </div>
+            </div>
+
+            <div class="challenge-item">
+              <div class="challenge-info">
+                <div class="challenge-title">⭐ Reach Top 10</div>
+                <div class="challenge-reward">Reward: 200 ANIVERSE</div>
+              </div>
+              <div class="challenge-progress">
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width: 30%;"></div>
+                </div>
+                <div class="progress-text">Rank #23</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="sidebar-card">
+          <h3><i class="fas fa-chart-bar"></i> Your Stats</h3>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #94a3b8;">Games Played</span>
+              <span style="color: #e2e8f0; font-weight: 600;">127</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #94a3b8;">Win Rate</span>
+              <span style="color: #10b981; font-weight: 600;">73%</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #94a3b8;">Total Earnings</span>
+              <span style="color: #fbbf24; font-weight: 600;">2,340 ANIVERSE</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="color: #94a3b8;">Current Streak</span>
+              <span style="color: #f97316; font-weight: 600;">🔥 5 days</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Game Modal -->
+<div id="gameModal" class="game-modal hidden">
+  <div class="game-modal-content">
+    <span class="close-btn" onclick="closeGameModal()">&times;</span>
+    <iframe id="gameIframe" src="" frameborder="0" width="100%" height="600px"></iframe>
+  </div>
+</div>
+
+<script>
+// Enhanced Games Data
+const gamesData = [
+  {
+    id: 1,
+    title: 'Cursed Clash',
+    description: 'Epic battles with your NFT dragons in a strategic combat system featuring real-time multiplayer action.',
+    image: 'https://static.bandainamcoent.eu/high/jujutsu-kaisen/jujutsu-kaisen-cursed-clash/00-page-setup/jjk-news-announcement-thumbnail.jpg',
+    category: 'strategy',
+    players: 15420,
+    rating: 4.8,
+    rewards: '500 ANIVERSE',
+    featured: true,
+    playTime: '2-5 min',
+    status: 'online'
+  },
+  {
+    id: 2,
+    title: 'PokéCard Brawl',
+    description: 'Turn-based card game where trainers use NFT cards representing elemental Pokémon-inspired creatures to battle, evolve, and claim victory in arenas',
+    image: 'https://static0.gamerantimages.com/wordpress/wp-content/uploads/2021/04/pokemon-anime-characters.jpg?q=70&fit=contain&w=1200&h=628&dpr=1',
+    category: 'action',
+    players: 8930,
+    rating: 4.6,
+    rewards: '300 ANIVERSE',
+    featured: false,
+    playTime: '10-20 min',
+    status: 'maintenance'
+  },
+  {
+    id: 3,
+    title: 'Shinigami Puzzle Trials',
+    description: 'Outwit your opponents in a strategic puzzle game based on Death Note, where players solve moral dilemmas and crack cryptic riddles to win Ryuk’s favor.',
+    image: 'https://images7.alphacoders.com/661/thumb-1920-661083.jpg',
+    category: 'puzzle',
+    players: 12350,
+    rating: 4.7,
+    rewards: '200 ANIVERSE',
+    featured: true,
+    playTime: '5-15 min',
+    status: 'maintenance'
+  },
+  {
+    id: 4,
+    title: 'Konoha Puzzle Quest',
+    description: 'Naruto-themed logic and memory game where players help Team 7 solve traps and puzzles to uncover secrets hidden across ninja scrolls',
+    image: 'https://wallpapersok.com/images/high/iconic-team-7-naruto-dkdgxzcmkgpzm7eq.jpg',
+    category: 'action',
+    players: 18750,
+    rating: 4.9,
+    rewards: '800 ANIVERSE',
+    featured: true,
+    playTime: '20-45 min',
+    status: 'maintenance'
+  },
+  {
+    id: 5,
+    title: 'Grimoire Chronicles',
+    description: 'RPG-style game inspired by Black Clover where NFT grimoires determine your spells, and players team up for magical quests and wizard duels.',
+    image: 'https://wallpapers.com/images/hd/black-clover-characters-xwiz0kd7obbmcb2d.jpg',
+    category: 'arcade',
+    players: 6420,
+    rating: 4.4,
+    rewards: '150 ANIVERSE',
+    featured: false,
+    playTime: '8-25 min',
+    status: 'maintenance'
+  },
+  {
+    id: 6,
+    title: 'Hashira Match Quest',
+    description: 'A visually rich match-3 puzzle game where players align elemental orbs to unleash Hashira abilities. Completing levels unlocks Demon Slayer NFT badges and rare Breathing Techniques',
+    image: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2024/06/demon-slayer-hashira-members.jpg',
+    category: 'rpg',
+    players: 22100,
+    rating: 4.8,
+    rewards: '1000 ANIVERSE',
+    featured: true,
+    playTime: '30-90 min',
+    status: 'maintenance'
+  }
+];
+
+// Enhanced render function with animations and status indicators
+function renderGames(games) {
+  const allGamesDiv = document.getElementById("allGames");
+  const featuredGamesDiv = document.getElementById("featuredGames");
+  
+  allGamesDiv.innerHTML = "";
+  featuredGamesDiv.innerHTML = "";
+
+  games.forEach((game, index) => {
+    const card = document.createElement("div");
+    card.className = "game-card";
+    card.dataset.category = game.category;
+    card.style.animationDelay = `${index * 0.1}s`;
+    
+    const statusClass = game.status === 'online' ? 'status-online' : 
+                       game.status === 'maintenance' ? 'status-busy' : 'status-offline';
+    
+    const statusText = game.status === 'online' ? '🟢 Online' : 
+                      game.status === 'maintenance' ? '🟡 Maintenance' : '🔴 Offline';
+
+    card.innerHTML = `
+      <div style="position: relative;">
+        <img src="${game.image}" alt="${game.title}" />
+        <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 0.3rem 0.6rem; border-radius: 15px; font-size: 0.7rem; color: white;">
+          ${statusText}
+        </div>
+      </div>
+      <h3>${game.title}</h3>
+      <p>${game.description}</p>
+      <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+        <small>🎮 ${game.players.toLocaleString()} players</small>
+        <small class="${statusClass}">⭐ ${game.rating}</small>
+      </div>
+      <small>⏱️ ${game.playTime}</small>
+      <strong>🏆 ${game.rewards}</strong>
+      <button class="play-btn" onclick="launchGame(${game.id}, '${game.status}')" ${game.status !== 'online' ? 'disabled' : ''}>
+        ${game.status === 'online' ? 'Play Now' : 
+          game.status === 'maintenance' ? 'Under Maintenance' : 'Coming Soon'}
+      </button>
+    `;
+
+    // Add disabled styling for non-online games
+    if (game.status !== 'online') {
+      card.style.opacity = '0.7';
+      const playBtn = card.querySelector('.play-btn');
+      playBtn.style.background = '#6b7280';
+      playBtn.style.cursor = 'not-allowed';
+    }
+
+    allGamesDiv.appendChild(card);
+    
+    // Add to featured games if marked as featured
+    if (game.featured) {
+      const featuredCard = card.cloneNode(true);
+      // Re-attach event listeners for featured cards
+      const featuredPlayBtn = featuredCard.querySelector('.play-btn');
+      featuredPlayBtn.onclick = () => launchGame(game.id, game.status);
+      featuredGamesDiv.appendChild(featuredCard);
+    }
+  });
+
+  // Add loading animation
+  setTimeout(() => {
+    document.querySelectorAll('.game-card').forEach(card => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    });
+  }, 100);
+}
+
+// Enhanced game launch function with status checking
+function launchGame(gameId, status) {
+  if (status !== 'online') {
+    if (status === 'maintenance') {
+      showNotification('This game is currently under maintenance. Please try again later.', 'warning');
+    } else {
+      showNotification('This game is coming soon! Stay tuned for updates.', 'info');
+    }
+    return;
+  }
+
+  if (gameId === 1) {
+    // Show loading state
+    showNotification('Loading Jujutsu Arena...', 'info');
+    
+    // Simulate loading delay
+    setTimeout(() => {
+      document.getElementById("gameIframe").src = "/gamezone/jujutsu-arena";
+      document.getElementById("gameModal").classList.remove("hidden");
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }, 1000);
+  } else {
+    showNotification('This game will be available soon!', 'info');
+  }
+}
+
+// Enhanced modal close function
+function closeGameModal() {
+  document.getElementById("gameModal").classList.add("hidden");
+  document.getElementById("gameIframe").src = "";
+  document.body.style.overflow = 'auto'; // Restore scrolling
+}
+
+// Enhanced filter function with animations
+function filterGames(category) {
+  const cards = document.querySelectorAll(".game-card");
+  
+  // Add fade out effect
+  cards.forEach(card => {
+    card.style.opacity = '0.3';
+    card.style.transform = 'scale(0.95)';
+  });
+  
+  setTimeout(() => {
+    cards.forEach(card => {
+      if (category === "all" || card.dataset.category === category) {
+        card.style.display = "block";
+        card.style.opacity = '1';
+        card.style.transform = 'scale(1)';
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }, 200);
+
+  // Update active button
+  document.querySelectorAll(".category-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  document.querySelector(`.category-btn[data-category="${category}"]`).classList.add("active");
+}
+
+// Notification system
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    color: white;
+    font-weight: 500;
+    z-index: 10001;
+    animation: slideInRight 0.3s ease;
+    max-width: 300px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  `;
+  
+  // Set background color based on type
+  const colors = {
+    info: 'linear-gradient(135deg, #3b82f6, #2563eb)',
+    warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+    success: 'linear-gradient(135deg, #10b981, #059669)',
+    error: 'linear-gradient(135deg, #ef4444, #dc2626)'
+  };
+  
+  notification.style.background = colors[type] || colors.info;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = 'slideOutRight 0.3s ease forwards';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Add notification animations to CSS
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideOutRight {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+`;
+document.head.appendChild(notificationStyles);
+
+// Search functionality
+function initializeSearch() {
+  const searchContainer = document.createElement('div');
+  searchContainer.innerHTML = `
+    <div style="margin-bottom: 1rem; position: relative;">
+      <input type="text" id="gameSearch" placeholder="🔍 Search games..." 
+             style="width: 100%; padding: 0.8rem 1rem; background: rgba(31, 41, 55, 0.8); 
+                    border: 1px solid rgba(107, 114, 128, 0.4); border-radius: 10px; 
+                    color: #e2e8f0; font-size: 0.9rem;">
+      <div id="searchResults" style="position: absolute; top: 100%; left: 0; right: 0; 
+                                   background: rgba(17, 24, 39, 0.95); border-radius: 10px; 
+                                   border: 1px solid rgba(75, 85, 99, 0.4); margin-top: 0.5rem; 
+                                   max-height: 200px; overflow-y: auto; z-index: 1000; display: none;"></div>
+    </div>
+  `;
+  
+  const categoryFilter = document.querySelector('.category-filter');
+  categoryFilter.parentNode.insertBefore(searchContainer, categoryFilter);
+  
+  const searchInput = document.getElementById('gameSearch');
+  const searchResults = document.getElementById('searchResults');
+  
+  searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.toLowerCase().trim();
+    
+    if (query.length === 0) {
+      searchResults.style.display = 'none';
+      filterGames('all');
+      return;
+    }
+    
+    const filteredGames = gamesData.filter(game => 
+      game.title.toLowerCase().includes(query) || 
+      game.description.toLowerCase().includes(query) ||
+      game.category.toLowerCase().includes(query)
+    );
+    
+    if (filteredGames.length > 0) {
+      searchResults.innerHTML = filteredGames.map(game => `
+        <div style="padding: 0.8rem; border-bottom: 1px solid rgba(75, 85, 99, 0.2); 
+                    cursor: pointer; transition: background 0.2s ease;"
+             onmouseover="this.style.background='rgba(31, 41, 55, 0.8)'"
+             onmouseout="this.style.background='transparent'"
+             onclick="searchGame(${game.id})">
+          <div style="color: #e2e8f0; font-weight: 500;">${game.title}</div>
+          <div style="color: #94a3b8; font-size: 0.8rem;">${game.category.toUpperCase()}</div>
+        </div>
+      `).join('');
+      searchResults.style.display = 'block';
+    } else {
+      searchResults.innerHTML = '<div style="padding: 1rem; color: #6b7280; text-align: center;">No games found</div>';
+      searchResults.style.display = 'block';
+    }
+  });
+  
+  // Hide search results when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!searchContainer.contains(e.target)) {
+      searchResults.style.display = 'none';
+    }
+  });
+}
+
+function searchGame(gameId) {
+  const game = gamesData.find(g => g.id === gameId);
+  if (game) {
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('gameSearch').value = game.title;
+    
+    // Scroll to the game card
+    const gameCard = document.querySelector(`[onclick*="launchGame(${gameId}"]`);
+    if (gameCard) {
+      gameCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      gameCard.style.animation = 'pulse 1s ease-in-out';
+    }
+  }
+}
+
+// Add pulse animation
+const pulseStyle = document.createElement('style');
+pulseStyle.textContent = `
+  @keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.7); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(147, 51, 234, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); }
+  }
+`;
+document.head.appendChild(pulseStyle);
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  renderGames(gamesData);
+  initializeSearch();
+  
+  // Add welcome message
+  setTimeout(() => {
+    showNotification('Welcome to GameZone! Start playing to earn ANIVERSE tokens.', 'success');
+  }, 1000);
+});
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  // Escape key to close modal
+  if (e.key === 'Escape') {
+    closeGameModal();
+  }
+  
+  // Ctrl/Cmd + F to focus search
+  if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+    e.preventDefault();
+    const searchInput = document.getElementById('gameSearch');
+    if (searchInput) {
+      searchInput.focus();
+    }
+  }
+});
+
+// Auto-refresh leaderboard (simulate real-time updates)
+setInterval(() => {
+  const leaderboardItems = document.querySelectorAll('.leaderboard-item');
+  leaderboardItems.forEach(item => {
+    const scoreElement = item.querySelector('.player-score');
+    if (scoreElement && Math.random() < 0.1) { // 10% chance to update
+      const currentScore = parseInt(scoreElement.textContent.replace(/[^0-9]/g, ''));
+      const newScore = currentScore + Math.floor(Math.random() * 50);
+      scoreElement.textContent = `${newScore.toLocaleString()} pts`;
+      
+      // Add brief highlight effect
+      item.style.background = 'rgba(147, 51, 234, 0.2)';
+      setTimeout(() => {
+        item.style.background = '';
+      }, 1000);
+    }
+  });
+}, 30000); // Update every 30 seconds
+</script>
+
+<%- include('../partials/footer') %>

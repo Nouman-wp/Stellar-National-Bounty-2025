@@ -1,0 +1,132 @@
+<%- include('../partials/header', { title: 'NFT Marketplace - AniVerse' }) %>
+<%- include('../partials/navbar', { currentPage: 'marketplace' }) %>
+
+<div class="page-container">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>NFT Marketplace</h1>
+      <p>Discover, collect, and trade exclusive anime NFTs</p>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="marketplace-controls">
+      <div class="search-section">
+        <div class="search-box">
+          <i class="fas fa-search"></i>
+          <input type="text" placeholder="Search NFTs..." id="marketplaceSearch" oninput="filterNFTs()">
+        </div>
+      </div>
+      
+      <div class="filter-section">
+        <select id="categoryFilter" onchange="filterNFTs()">
+          <option value="all">All Categories</option>
+          <option value="legendary">Legendary</option>
+          <option value="rare">Rare</option>
+          <option value="common">Common</option>
+          <option value="gaming">Gaming</option>
+          <option value="collectibles">Collectibles</option>
+        </select>
+        
+        <select id="sortFilter" onchange="filterNFTs()">
+          <option value="newest">Newest First</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="popular">Most Popular</option>
+        </select>
+        
+        <div class="view-toggle">
+          <button class="view-btn active" data-view="grid" onclick="toggleView('grid')">
+            <i class="fas fa-th"></i>
+          </button>
+          <button class="view-btn" data-view="list" onclick="toggleView('list')">
+            <i class="fas fa-list"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- NFT Grid -->
+    <div id="nftGrid" class="nft-grid">
+      <!-- NFT items will be populated by JavaScript -->
+    </div>
+
+    <!-- Load More -->
+    <div class="load-more-section">
+      <button class="btn gradient-btn" onclick="loadMoreNFTs()">Load More NFTs</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // NFT Data
+  const nftData = [
+    {
+      id: 1,
+      name: 'Dragon Slayer Akira',
+      price: '2.5 ETH',
+      image: 'https://images.pexels.com/photos/7042593/pexels-photo-7042593.jpeg?auto=compress&cs=tinysrgb&w=400',
+      rarity: 'legendary',
+      likes: 342,
+      trending: true,
+      category: 'gaming'
+    },
+    {
+      id: 2,
+      name: 'Mystic Warrior Luna',
+      price: '1.8 ETH',
+      image: 'https://images.pexels.com/photos/7042590/pexels-photo-7042590.jpeg?auto=compress&cs=tinysrgb&w=400',
+      rarity: 'rare',
+      likes: 198,
+      trending: false,
+      category: 'collectibles'
+    },
+    {
+      id: 3,
+      name: 'Shadow Ninja Kai',
+      price: '3.2 ETH',
+      image: 'https://images.pexels.com/photos/7042591/pexels-photo-7042591.jpeg?auto=compress&cs=tinysrgb&w=400',
+      rarity: 'legendary',
+      likes: 456,
+      trending: true,
+      category: 'gaming'
+    },
+    {
+      id: 4,
+      name: 'Crystal Mage Yuki',
+      price: '1.2 ETH',
+      image: 'https://images.pexels.com/photos/7042592/pexels-photo-7042592.jpeg?auto=compress&cs=tinysrgb&w=400',
+      rarity: 'rare',
+      likes: 289,
+      trending: false,
+      category: 'collectibles'
+    },
+    {
+      id: 5,
+      name: 'Fire Phoenix Rei',
+      price: '4.1 ETH',
+      image: 'https://images.pexels.com/photos/7042594/pexels-photo-7042594.jpeg?auto=compress&cs=tinysrgb&w=400',
+      rarity: 'legendary',
+      likes: 678,
+      trending: true,
+      category: 'gaming'
+    },
+    {
+      id: 6,
+      name: 'Storm Archer Hana',
+      price: '0.9 ETH',
+      image: 'https://images.pexels.com/photos/7042595/pexels-photo-7042595.jpeg?auto=compress&cs=tinysrgb&w=400',
+      rarity: 'common',
+      likes: 156,
+      trending: false,
+      category: 'collectibles'
+    }
+  ];
+
+  // Initialize marketplace
+  document.addEventListener('DOMContentLoaded', function() {
+    renderNFTs(nftData);
+  });
+</script>
+
+<%- include('../partials/footer') %>

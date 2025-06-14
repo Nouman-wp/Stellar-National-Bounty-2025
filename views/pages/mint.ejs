@@ -1,0 +1,19 @@
+<%- include('../partials/header', { title: 'NFT Marketplace - AniVerse' }) %>
+<%- include('../partials/navbar', { currentPage: 'marketplace' }) %>
+
+<h2 style="text-align:center;">Mint New NFT</h2>
+<div class="container">
+
+    
+<form action="/mint" method="POST" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="NFT Name" required /><br /><br />
+    <textarea name="description" placeholder="Description" required></textarea><br /><br />
+    <input type="number" name="tokenId" placeholder="Token ID" required /><br /><br />
+    <input type="text" name="owner" placeholder="Wallet Address" required /><br /><br />
+    <input type="text" name="rarity" placeholder="common/epic/rare/Legendry" required /><br /><br />
+    <button type="submit">Mint NFT</button>
+  <input type="file" name="nftImage" accept="image/*" required /><br /><br />
+</form>
+</div>
+
+<%- include('../partials/footer') %>

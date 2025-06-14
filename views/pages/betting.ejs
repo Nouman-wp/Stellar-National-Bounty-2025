@@ -1,0 +1,264 @@
+<%- include('../partials/header', { title: 'Betting Arena - AniVerse' }) %>
+<%- include('../partials/navbar', { currentPage: 'betting' }) %>
+
+<div class="page-container">
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1>Betting Arena</h1>
+      <p>Place bets on games, tournaments, and NFT battles</p>
+    </div>
+
+    <div class="betting-layout">
+      <!-- Main Content -->
+      <div class="betting-main">
+        <!-- Live Matches -->
+        <section class="live-matches">
+          <h2><i class="fas fa-circle live-indicator"></i> Live Matches</h2>
+          <div class="matches-grid">
+            <div class="match-card live">
+              <div class="match-header">
+                <span class="match-status live">LIVE</span>
+                <span class="match-time">15:32</span>
+              </div>
+              <div class="match-teams">
+                <div class="team">
+                  <div class="team-avatar">🐉</div>
+                  <div class="team-name">DragonSlayers</div>
+                </div>
+                <div class="match-score">2 - 1</div>
+                <div class="team">
+                  <div class="team-avatar">⚔️</div>
+                  <div class="team-name">SamuraiLords</div>
+                </div>
+              </div>
+              <div class="betting-odds">
+                <button class="odds-btn" onclick="placeBet('team1', 1.5)">
+                  <span>DragonSlayers</span>
+                  <span class="odds">1.5x</span>
+                </button>
+                <button class="odds-btn" onclick="placeBet('team2', 2.3)">
+                  <span>SamuraiLords</span>
+                  <span class="odds">2.3x</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="match-card live">
+              <div class="match-header">
+                <span class="match-status live">LIVE</span>
+                <span class="match-time">08:45</span>
+              </div>
+              <div class="match-teams">
+                <div class="team">
+                  <div class="team-avatar">🥷</div>
+                  <div class="team-name">NinjaClans</div>
+                </div>
+                <div class="match-score">0 - 3</div>
+                <div class="team">
+                  <div class="team-avatar">🔮</div>
+                  <div class="team-name">MysticMages</div>
+                </div>
+              </div>
+              <div class="betting-odds">
+                <button class="odds-btn" onclick="placeBet('team1', 3.2)">
+                  <span>NinjaClans</span>
+                  <span class="odds">3.2x</span>
+                </button>
+                <button class="odds-btn" onclick="placeBet('team2', 1.2)">
+                  <span>MysticMages</span>
+                  <span class="odds">1.2x</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Upcoming Matches -->
+        <section class="upcoming-matches">
+          <h2><i class="fas fa-clock"></i> Upcoming Matches</h2>
+          <div class="matches-list">
+            <div class="match-item">
+              <div class="match-time-info">
+                <div class="match-date">Today</div>
+                <div class="match-time">18:00</div>
+              </div>
+              <div class="match-details">
+                <div class="teams">
+                  <span class="team">CrystalHunters</span>
+                  <span class="vs">vs</span>
+                  <span class="team">ElementalWarriors</span>
+                </div>
+                <div class="match-type">Tournament Finals</div>
+              </div>
+              <div class="match-odds">
+                <button class="odds-btn small" onclick="placeBet('team1', 1.8)">1.8x</button>
+                <button class="odds-btn small" onclick="placeBet('team2', 2.1)">2.1x</button>
+              </div>
+            </div>
+
+            <div class="match-item">
+              <div class="match-time-info">
+                <div class="match-date">Tomorrow</div>
+                <div class="match-time">20:30</div>
+              </div>
+              <div class="match-details">
+                <div class="teams">
+                  <span class="team">PhoenixRiders</span>
+                  <span class="vs">vs</span>
+                  <span class="team">ThunderBeasts</span>
+                </div>
+                <div class="match-type">Championship League</div>
+              </div>
+              <div class="match-odds">
+                <button class="odds-btn small" onclick="placeBet('team1', 1.4)">1.4x</button>
+                <button class="odds-btn small" onclick="placeBet('team2', 2.9)">2.9x</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- NFT Battle Predictions -->
+        <section class="nft-battles">
+          <h2><i class="fas fa-fire"></i> NFT Battle Predictions</h2>
+          <div class="battles-grid">
+            <div class="battle-card">
+              <div class="battle-nfts">
+                <div class="nft">
+                  <img src="https://images.pexels.com/photos/7042593/pexels-photo-7042593.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Dragon Slayer">
+                  <div class="nft-name">Dragon Slayer</div>
+                  <div class="nft-power">Power: 945</div>
+                </div>
+                <div class="vs-indicator">VS</div>
+                <div class="nft">
+                  <img src="https://images.pexels.com/photos/7042591/pexels-photo-7042591.jpeg?auto=compress&cs=tinysrgb&w=200" alt="Shadow Ninja">
+                  <div class="nft-name">Shadow Ninja</div>
+                  <div class="nft-power">Power: 892</div>
+                </div>
+              </div>
+              <div class="battle-betting">
+                <button class="bet-btn dragon" onclick="placeBet('dragon', 1.6)">
+                  <span>Dragon Wins</span>
+                  <span class="odds">1.6x</span>
+                </button>
+                <button class="bet-btn ninja" onclick="placeBet('ninja', 2.4)">
+                  <span>Ninja Wins</span>
+                  <span class="odds">2.4x</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="betting-sidebar">
+        <!-- Bet Slip -->
+        <div class="sidebar-card">
+          <h3><i class="fas fa-ticket-alt"></i> Bet Slip</h3>
+          <div id="betSlip" class="bet-slip">
+            <div class="empty-slip">
+              <i class="fas fa-ticket-alt"></i>
+              <p>No bets selected</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Bets -->
+        <div class="sidebar-card">
+          <h3><i class="fas fa-history"></i> My Bets</h3>
+          <div class="my-bets">
+            <div class="bet-history-item won">
+              <div class="bet-info">
+                <div class="bet-match">DragonSlayers vs NinjaClans</div>
+                <div class="bet-details">DragonSlayers Win • 1.8x</div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">+0.18 ETH</div>
+                <div class="bet-status won">WON</div>
+              </div>
+            </div>
+
+            <div class="bet-history-item lost">
+              <div class="bet-info">
+                <div class="bet-match">MysticMages vs SamuraiLords</div>
+                <div class="bet-details">MysticMages Win • 2.1x</div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">-0.1 ETH</div>
+                <div class="bet-status lost">LOST</div>
+              </div>
+            </div>
+
+            <div class="bet-history-item pending">
+              <div class="bet-info">
+                <div class="bet-match">CrystalHunters vs ElementalWarriors</div>
+                <div class="bet-details">CrystalHunters Win • 1.8x</div>
+              </div>
+              <div class="bet-result">
+                <div class="bet-amount">0.2 ETH</div>
+                <div class="bet-status pending">PENDING</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="sidebar-card">
+          <h3><i class="fas fa-chart-bar"></i> Statistics</h3>
+          <div class="betting-stats">
+            <div class="stat-item">
+              <div class="stat-label">Total Bets</div>
+              <div class="stat-value">47</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Win Rate</div>
+              <div class="stat-value">68%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Total Winnings</div>
+              <div class="stat-value">2.4 ETH</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Current Streak</div>
+              <div class="stat-value">5 Wins</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bet Modal -->
+<div id="betModal" class="modal">
+  <div class="modal-content bet-modal">
+    <div class="modal-header">
+      <h3>Place Bet</h3>
+      <span class="close" onclick="closeBetModal()">&times;</span>
+    </div>
+    <div class="bet-form">
+      <div class="bet-selection">
+        <div id="betSelection" class="selected-bet"></div>
+      </div>
+      <div class="bet-amount-section">
+        <label>Bet Amount (ETH)</label>
+        <input type="number" id="betAmount" placeholder="0.1" min="0.01" step="0.01">
+        <div class="quick-amounts">
+          <button onclick="setBetAmount(0.1)">0.1</button>
+          <button onclick="setBetAmount(0.5)">0.5</button>
+          <button onclick="setBetAmount(1.0)">1.0</button>
+        </div>
+      </div>
+      <div class="potential-payout">
+        <div class="payout-info">
+          <span>Potential Payout:</span>
+          <span id="potentialPayout">0 ETH</span>
+        </div>
+      </div>
+      <button class="btn gradient-btn" onclick="confirmBet()">Place Bet</button>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

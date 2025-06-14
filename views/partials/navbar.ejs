@@ -1,0 +1,806 @@
+<nav class="navbar">
+  <div class="container">
+    <a href="/" class="logo">
+      <i class="fas fa-bolt"></i>
+      <span>AniVerse</span>
+    </a>
+
+    <div class="nav-center">
+      <ul class="nav-links">
+        <li><a href="/" class="<%= currentPage === 'home' ? 'active' : '' %>"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="/marketplace" class="<%= currentPage === 'marketplace' ? 'active' : '' %>"><i class="fas fa-shopping-bag"></i> Marketplace</a></li>
+        <li><a href="/gamezone" class="<%= currentPage === 'gamezone' ? 'active' : '' %>"><i class="fas fa-gamepad"></i> GameZone</a></li>
+        <li><a href="/betting" class="<%= currentPage === 'betting' ? 'active' : '' %>"><i class="fas fa-chart-line"></i> Betting</a></li>
+        <li><a href="/redeem" class="<%= currentPage === 'redeem' ? 'active' : '' %>"><i class="fas fa-gift"></i> Redeem</a></li>
+      </ul>
+    </div>
+
+    <div class="nav-right">
+      <button class="search-btn" onclick="openSearchModal()">
+        <i class="fas fa-search"></i>
+      </button>
+
+      <!-- Wallet Connection -->
+      <div class="wallet-section">
+        <button id="connectBtn" class="wallet-btn gradient-btn" onclick="connectWallet()">
+          <i class="fas fa-wallet"></i>
+          <span>Connect Wallet</span>
+        </button>
+
+        <div id="walletProfile" class="wallet-profile hidden" onclick="toggleWalletMenu()">
+          <div class="profile-avatar">
+            <img id="profileImage" src="https://api.dicebear.com/7.x/avataaars/svg?seed=default" alt="Profile" />
+          </div>
+          <div class="wallet-info">
+            <span id="walletAddress" class="wallet-address"></span>
+            <span class="wallet-label">Wallet Connected</span>
+          </div>
+          <i class="fas fa-chevron-down dropdown-arrow"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="mobile-menu">
+    <a href="/"><i class="fas fa-home"></i> Home</a>
+    <a href="/marketplace"><i class="fas fa-shopping-bag"></i> Marketplace</a>
+    <a href="/gamezone"><i class="fas fa-gamepad"></i> GameZone</a>
+    <a href="/betting"><i class="fas fa-chart-line"></i> Betting</a>
+    <a href="/redeem"><i class="fas fa-gift"></i> Redeem</a>
+  </div>
+</nav>
+
+<!-- Wallet Dropdown (positioned on body) -->
+<div id="walletDropdown" class="wallet-dropdown-overlay hidden">
+  <div class="wallet-menu">
+    <div class="menu-header">
+      <div class="profile-avatar-large">
+        <img id="profileImageLarge" src="https://api.dicebear.com/7.x/avataaars/svg?seed=default" alt="Profile" />
+      </div>
+      <div class="wallet-details">
+        <span id="walletAddressFull" class="wallet-address-full"></span>
+        <button class="copy-btn" onclick="copyWalletAddress()">
+          <i class="fas fa-copy"></i>
+          Copy
+        </button>
+      </div>
+    </div>
+    <div class="menu-divider"></div>
+    <div class="menu-items">
+      <a href="/dashboard" class="menu-item">
+        <i class="fas fa-user"></i>
+        <span>My Dashboard</span>
+      </a>
+      <a href="/edit-profile" class="menu-item">
+        <i class="fas fa-edit"></i>
+        <span>Edit Profile</span>
+      </a>
+      <a href="/portfolio" class="menu-item">
+        <i class="fas fa-chart-pie"></i>
+        <span>Portfolio</span>
+      </a>
+      <a href="/settings" class="menu-item">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+      </a>
+      <div class="menu-divider"></div>
+      <button class="menu-item disconnect-btn" onclick="disconnectWallet()">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Disconnect Wallet</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Search Modal -->
+<div id="searchModal" class="search-modal-overlay">
+  <div class="search-modal-content">
+    <div class="search-modal-header">
+      <h3>Search AniVerse</h3>
+      <span class="search-modal-close" onclick="closeSearchModal()">&times;</span>
+    </div>
+    <div class="search-input-container">
+      <i class="fas fa-search"></i>
+      <input type="text" id="globalSearch" placeholder="Search NFTs, games, or users..." oninput="performSearch(this.value)">
+    </div>
+    <div id="searchResults" class="search-modal-results"></div>
+  </div>
+</div>
+
+<script>
+  let currentWalletAddress = '';
+
+  async function connectWallet() {
+    if (window.ethereum) {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+        const walletAddress = accounts[0];
+        currentWalletAddress = walletAddress;
+
+        // Generate profile image based on wallet address
+        const profileImageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`;
+        
+        // Update UI elements
+        document.getElementById("connectBtn").style.display = "none";
+        const walletProfile = document.getElementById("walletProfile");
+        
+        // Update profile images
+        document.getElementById("profileImage").src = profileImageUrl;
+        document.getElementById("profileImageLarge").src = profileImageUrl;
+        
+        // Update wallet addresses
+        const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+        const mediumAddress = `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}`;
+        document.getElementById("walletAddress").textContent = shortAddress;
+        document.getElementById("walletAddressFull").textContent = mediumAddress;
+        
+        walletProfile.classList.remove("hidden");
+        
+        // Show success notification
+        showNotification("Wallet connected successfully!", "success");
+        
+      } catch (err) {
+        showNotification("Wallet connection failed. Please try again.", "error");
+        console.error(err);
+      }
+    } else {
+      showNotification("MetaMask is not installed! Please install MetaMask to connect your wallet.", "error");
+    }
+  }
+
+  function toggleWalletMenu() {
+    const walletDropdown = document.getElementById("walletDropdown");
+    const dropdownArrow = document.querySelector(".dropdown-arrow");
+    const walletProfile = document.getElementById("walletProfile");
+    
+    if (walletDropdown.classList.contains("hidden")) {
+      // Position dropdown below wallet profile
+      const rect = walletProfile.getBoundingClientRect();
+      const walletMenu = walletDropdown.querySelector(".wallet-menu");
+      
+      walletMenu.style.position = "absolute";
+      walletMenu.style.top = (rect.bottom + 10) + "px";
+      walletMenu.style.right = (window.innerWidth - rect.right) + "px";
+      walletMenu.style.zIndex = "999999";
+      
+      walletDropdown.classList.remove("hidden");
+      dropdownArrow.classList.add("rotated");
+    } else {
+      walletDropdown.classList.add("hidden");
+      dropdownArrow.classList.remove("rotated");
+    }
+  }
+
+  function disconnectWallet() {
+    // Reset UI
+    document.getElementById("connectBtn").style.display = "flex";
+    document.getElementById("walletProfile").classList.add("hidden");
+    document.getElementById("walletDropdown").classList.add("hidden");
+    document.querySelector(".dropdown-arrow").classList.remove("rotated");
+    
+    // Reset data
+    currentWalletAddress = '';
+    
+    showNotification("Wallet disconnected", "info");
+  }
+
+  function copyWalletAddress() {
+    if (currentWalletAddress) {
+      navigator.clipboard.writeText(currentWalletAddress).then(() => {
+        showNotification("Wallet address copied to clipboard!", "success");
+        
+        // Visual feedback on copy button
+        const copyBtn = document.querySelector(".copy-btn");
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        copyBtn.style.background = "#10b981";
+        
+        setTimeout(() => {
+          copyBtn.innerHTML = originalText;
+          copyBtn.style.background = "";
+        }, 2000);
+      }).catch(() => {
+        showNotification("Failed to copy address", "error");
+      });
+    }
+  }
+
+  function toggleMobileMenu() {
+    document.getElementById("mobileMenu").classList.toggle("open");
+  }
+
+  // Auto-check if already connected
+  window.addEventListener("load", async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length > 0) {
+          const walletAddress = accounts[0];
+          currentWalletAddress = walletAddress;
+          
+          const profileImageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`;
+          
+          document.getElementById("connectBtn").style.display = "none";
+          const walletProfile = document.getElementById("walletProfile");
+          
+          document.getElementById("profileImage").src = profileImageUrl;
+          document.getElementById("profileImageLarge").src = profileImageUrl;
+          
+          const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+          const mediumAddress = `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}`;
+          document.getElementById("walletAddress").textContent = shortAddress;
+          document.getElementById("walletAddressFull").textContent = mediumAddress;
+          
+          walletProfile.classList.remove("hidden");
+        }
+      } catch (error) {
+        console.error("Error checking wallet connection:", error);
+      }
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", function(event) {
+    const walletSection = document.querySelector(".wallet-section");
+    const walletDropdown = document.getElementById("walletDropdown");
+    const walletProfile = document.getElementById("walletProfile");
+    
+    if (!walletSection.contains(event.target) && !walletDropdown.contains(event.target)) {
+      walletDropdown.classList.add("hidden");
+      if (walletProfile) {
+        document.querySelector(".dropdown-arrow").classList.remove("rotated");
+      }
+    }
+  });
+
+  // Search Modal Functions
+  function openSearchModal() {
+    const modal = document.getElementById("searchModal");
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+    setTimeout(() => {
+      document.getElementById("globalSearch").focus();
+    }, 100);
+  }
+
+  function closeSearchModal() {
+    const modal = document.getElementById("searchModal");
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+    document.getElementById("globalSearch").value = "";
+    document.getElementById("searchResults").innerHTML = "";
+  }
+
+  function performSearch(value) {
+    const results = document.getElementById("searchResults");
+    if (value.trim() === "") {
+      results.innerHTML = "";
+    } else {
+      results.innerHTML = `<p>Searching for: <strong>${value}</strong></p>`;
+    }
+  }
+
+  // Notification system
+  function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+      <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+      <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Show notification
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Hide notification after 4 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => notification.remove(), 300);
+    }, 4000);
+  }
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+      closeSearchModal();
+      document.getElementById("walletDropdown").classList.add("hidden");
+      document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
+    }
+  });
+</script>
+
+<style>
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+    
+.search-btn {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  border: none;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+  flex-shrink: 0;
+}
+
+.search-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+}
+
+.search-btn i {
+  font-size: 16px;
+}
+
+/* Wallet Section Styles */
+.wallet-section {
+  position: relative;
+}
+
+.wallet-profile {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 3px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 200px;
+}
+
+.wallet-profile:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.wallet-profile.hidden {
+  display: none;
+}
+
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  flex-shrink: 0;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wallet-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.wallet-address {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.wallet-label {
+  color: #a1a1aa;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-arrow {
+  color: #a1a1aa;
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Wallet Dropdown Overlay - Positioned on Body */
+.wallet-dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  z-index: 999998;
+  pointer-events: none;
+}
+
+.wallet-dropdown-overlay.hidden {
+  display: none;
+}
+
+.wallet-dropdown-overlay .wallet-menu {
+  pointer-events: all;
+  background: linear-gradient(135deg, #1e293b 0%, #4c1d95 50%, #1e293b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  width: 280px;
+  max-width: 280px;
+  animation: slideDown 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-header {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-avatar-large {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(168, 85, 247, 0.5);
+  flex-shrink: 0;
+}
+
+.profile-avatar-large img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wallet-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wallet-address-full {
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy-btn {
+  background: rgba(168, 85, 247, 0.3);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #a855f7;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  align-self: flex-start;
+}
+
+.copy-btn:hover {
+  background: rgba(168, 85, 247, 0.4);
+  border-color: rgba(168, 85, 247, 0.6);
+  transform: translateY(-1px);
+}
+
+.menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0;
+}
+
+.menu-items {
+  padding: 0.5rem 0;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  color: #e2e8f0;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.menu-item:hover {
+  background: rgba(168, 85, 247, 0.2);
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+.menu-item i {
+  width: 16px;
+  text-align: center;
+  color: #a855f7;
+  transition: color 0.3s ease;
+}
+
+.menu-item:hover i {
+  color: #ffffff;
+}
+
+.disconnect-btn {
+  color: #ef4444 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+}
+
+.disconnect-btn i {
+  color: #ef4444 !important;
+}
+
+.disconnect-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.disconnect-btn:hover i {
+  color: #ffffff !important;
+}
+
+/* Notification Styles */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10000;
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  max-width: 300px;
+}
+
+.notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.notification-success {
+  border-left: 4px solid #10b981;
+}
+
+.notification-error {
+  border-left: 4px solid #ef4444;
+}
+
+.notification-info {
+  border-left: 4px solid #3b82f6;
+}
+
+.notification i {
+  font-size: 1.25rem;
+}
+
+.notification-success i {
+  color: #10b981;
+}
+
+.notification-error i {
+  color: #ef4444;
+}
+
+.notification-info i {
+  color: #3b82f6;
+}
+
+/* Search Modal Styles */
+.search-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 999999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.search-modal-content {
+  background: linear-gradient(135deg, #1e293b 0%, #4c1d95 50%, #1e293b 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.search-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.search-modal-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.search-modal-close {
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #9ca3af;
+  transition: color 0.3s ease;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.search-modal-close:hover {
+  color: #ffffff;
+}
+
+.search-input-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.search-input-container i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.search-input-container input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input-container input:focus {
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+.search-input-container input::placeholder {
+  color: #9ca3af;
+}
+
+.search-modal-results {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+  min-height: 100px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-modal-results p {
+  color: #e2e8f0;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.search-modal-results strong {
+  color: #a855f7;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .wallet-dropdown-overlay .wallet-menu {
+    width: 260px;
+    max-width: 260px;
+    margin: 0 1rem;
+  }
+  
+  .notification {
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    transform: translateY(-100px);
+  }
+  
+  .notification.show {
+    transform: translateY(0);
+  }
+  
+  .wallet-profile {
+    min-width: 150px;
+    padding: 0.75rem;
+  }
+  
+  .wallet-info {
+    gap: 0.125rem;
+  }
+  
+  .wallet-address {
+    font-size: 0.8rem;
+  }
+  
+  .wallet-label {
+    font-size: 0.7rem;
+  }
+  
+  .wallet-address-full {
+    max-width: 140px;
+  }
+}
+</style>

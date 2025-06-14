@@ -1,0 +1,64 @@
+<%- include('../partials/header', { title: 'Airdrop Hub - AniVerse' }) %>
+<%- include('../partials/navbar', { currentPage: 'airdrop' }) %>
+
+<div class="page-container">
+  <div class="container">
+    <div class="page-header">
+      <h1>Airdrop Hub</h1>
+      <p>Claim free NFTs using your earned XP from games!</p>
+    </div>
+
+    <!-- Display User XP and Wallet Info -->
+    <% if (wallet) { %>
+      <div class="user-info">
+        <p><strong>Wallet:</strong> <%= wallet %> | <strong>XP:</strong> <%= userXP %></p>
+      </div>
+    <% } %>
+
+    <!-- Redeemable NFTs -->
+    <section class="active-airdrops">
+      <h2><i class="fas fa-gift"></i> Redeem NFTs</h2>
+      <div class="airdrops-grid">
+        <% if (nfts.length === 0) { %>
+          <p>No NFTs available for redemption currently.</p>
+        <% } else { %>
+          <% nfts.forEach(nft => { %>
+            <div class="airdrop-card">
+              <div class="airdrop-content">
+                <div class="airdrop-image">
+                  <img src="<%= nft.imageUrl %>" alt="<%= nft.name %>">
+                </div>
+                <div class="airdrop-info">
+                  <h3><%= nft.name %></h3>
+                  <p><%= nft.description %></p>
+                  <div class="airdrop-reward">
+                    <i class="fas fa-gift"></i>
+                    <span>Cost: 100 XP</span>
+                  </div>
+                </div>
+              </div>
+              <div class="airdrop-actions">
+                <form action="/redeem/claim" method="POST">
+                  <input type="hidden" name="walletAddress" value="<%= wallet %>" />
+                  <input type="hidden" name="nftId" value="<%= nft._id %>" />
+                  <% if (userXP >= 100) { %>
+                    <button class="btn gradient-btn" type="submit">
+                      <i class="fas fa-download"></i>
+                      Redeem Now
+                    </button>
+                  <% } else { %>
+                    <button class="btn secondary-btn" disabled>
+                      Not Enough XP
+                    </button>
+                  <% } %>
+                </form>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </section>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
