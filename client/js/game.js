@@ -31,4 +31,5 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (!session.loggedIn) {
     await connectWalletAndLogin();
   }
+  
 });

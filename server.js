@@ -31,14 +31,14 @@ app.use(
   })
 );
 
-// Middleware: Static files, EJS, body parsing
+
 
 app.set("view engine", "ejs");
 app.use(express.static("client"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Routes
+
 app.use("/mint", mintRoutes);
 app.use("/dashboard", require("./routes/dashboard"));
 app.use("/auth", require("./routes/auth"));

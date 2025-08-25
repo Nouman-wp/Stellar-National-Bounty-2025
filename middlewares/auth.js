@@ -4,6 +4,7 @@ module.exports.ensureWallet = (req, res, next) => {
     return next();
   }
   return res.redirect('/');
+  
 };
 
 
