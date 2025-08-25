@@ -1,147 +1,1110 @@
 <%- include('../partials/header', { title: 'NFT Marketplace - AniVerse' }) %>
 <%- include('../partials/navbar', { currentPage: 'marketplace' }) %>
 
-<div class="page-container">
-  <div class="container">
-    <!-- Page Header -->
-    <div class="page-header">
-      <h1>NFT Marketplace</h1>
-      <p>Discover, collect, and trade exclusive anime NFTs</p>
+<style>
+/* Enhanced marketplace with premium animations and effects */
+.marketplace-wrap {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.market-hero {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color: #fff;
+  padding: 4rem 2rem;
+  border-radius: 25px;
+  box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+  margin-bottom: 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.market-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: float 30s linear infinite;
+}
+
+.market-hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-50px, -50px) rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.market-hero h1 {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  font-weight: 900;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  background: linear-gradient(45deg, #fff, #f0f8ff, #fff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+  from { filter: drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+  to { filter: drop-shadow(0 0 20px rgba(255,255,255,0.8)); }
+}
+
+.market-hero p {
+  font-size: 1.3rem;
+  opacity: 0.95;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2.5rem;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.collection-card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid transparent;
+  position: relative;
+}
+
+.collection-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  border-radius: 25px;
+  padding: 2px;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.collection-card:hover::before {
+  opacity: 1;
+}
+
+.collection-card:hover {
+  transform: translateY(-15px) scale(1.02);
+  box-shadow: 0 25px 50px rgba(102, 126, 234, 0.25);
+}
+
+.collection-banner {
+  height: 220px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.collection-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 100%);
+}
+
+.collection-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: brightness(1.1) contrast(1.1);
+}
+
+.collection-card:hover .collection-banner img {
+  transform: scale(1.1) rotate(2deg);
+}
+
+.collection-body {
+  padding: 2rem;
+  position: relative;
+}
+
+.collection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.collection-title {
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: #1a202c;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nft-count {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.view-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  background-size: 200% 200%;
+  color: #fff;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  width: 100%;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.view-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.view-btn:hover::before {
+  left: 100%;
+}
+
+.view-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.5);
+  background-position: 100% 0;
+}
+
+.view-btn:active {
+  transform: translateY(-1px);
+}
+
+.stats-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  border-radius: 20px;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat {
+  text-align: center;
+  position: relative;
+}
+
+.stat::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.collection-card:hover .stat::after {
+  opacity: 1;
+}
+
+.stat-value {
+  font-weight: 800;
+  font-size: 1.4rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* Enhanced fullscreen collection view with premium effects */
+.collection-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0,0,0,0.95), rgba(26,32,44,0.98));
+  z-index: 1000;
+  display: none;
+  overflow-y: auto;
+  backdrop-filter: blur(20px);
+}
+
+.collection-fullscreen.active {
+  display: block;
+  animation: fullscreenFadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes fullscreenFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+  }
+}
+
+.fullscreen-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.fullscreen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+  position: relative;
+}
+
+.fullscreen-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  animation: expandLine 1s ease-out;
+}
+
+@keyframes expandLine {
+  from { width: 0; }
+  to { width: 100px; }
+}
+
+.fullscreen-title {
+  color: white;
+  font-size: 4rem;
+  font-weight: 900;
+  margin: 0;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+  from { filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5)); }
+  to { filter: drop-shadow(0 0 25px rgba(102, 126, 234, 0.8)); }
+}
+
+.close-btn {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border: 2px solid rgba(102, 126, 234, 0.5);
+  color: white;
+  padding: 1.2rem 2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.close-btn:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+  border-color: #667eea;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.fullscreen-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.fullscreen-stat {
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  padding: 2.5rem;
+  border-radius: 25px;
+  text-align: center;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.fullscreen-stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  transition: left 0.8s ease;
+}
+
+.fullscreen-stat:hover::before {
+  left: 100%;
+}
+
+.fullscreen-stat:hover {
+  transform: translateY(-5px);
+  border-color: #667eea;
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+}
+
+.fullscreen-stat-value {
+  font-size: 3rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.fullscreen-stat-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+.fullscreen-nft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2.5rem;
+  flex: 1;
+  animation: gridFadeIn 0.8s ease-out 0.3s both;
+}
+
+@keyframes gridFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fullscreen-nft-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border-radius: 25px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: 2px solid rgba(102, 126, 234, 0.2);
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+.fullscreen-nft-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  border-radius: 25px;
+  padding: 2px;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.fullscreen-nft-card:hover::before {
+  opacity: 1;
+}
+
+.fullscreen-nft-card:hover {
+  transform: translateY(-15px) scale(1.03);
+  box-shadow: 0 25px 50px rgba(102, 126, 234, 0.4);
+  border-color: #667eea;
+}
+
+.fullscreen-nft-image {
+  width: 100%;
+  height: 320px;
+  position: relative;
+  overflow: hidden;
+}
+
+.fullscreen-nft-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: brightness(1.1) contrast(1.1);
+}
+
+.fullscreen-nft-card:hover .fullscreen-nft-image img {
+  transform: scale(1.15) rotate(3deg);
+}
+
+.fullscreen-rarity-badge {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  animation: badgePulse 2s infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.rarity-common { 
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+}
+.rarity-rare { 
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+}
+.rarity-epic { 
+  background: linear-gradient(135deg, #9f7aea, #805ad5);
+  box-shadow: 0 8px 25px rgba(159, 122, 234, 0.4);
+}
+.rarity-legendary { 
+  background: linear-gradient(135deg, #f6ad55, #ed8936);
+  box-shadow: 0 8px 25px rgba(246, 173, 85, 0.4);
+}
+
+.fullscreen-nft-info {
+  padding: 2rem;
+}
+
+.fullscreen-nft-name {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.fullscreen-nft-price {
+  color: #667eea;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+}
+
+.fullscreen-buy-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+  background-size: 200% 200%;
+  color: white;
+  border: none;
+  padding: 1.2rem 2.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.4s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.fullscreen-buy-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.fullscreen-buy-btn:hover::before {
+  left: 100%;
+}
+
+.fullscreen-buy-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+  background-position: 100% 0;
+}
+
+.fullscreen-buy-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Enhanced responsive design */
+@media (max-width: 768px) {
+  .market-hero h1 { font-size: 2.5rem; }
+  .market-hero { padding: 3rem 1.5rem; }
+  .collections-grid { 
+    grid-template-columns: 1fr; 
+    gap: 2rem;
+  }
+  .fullscreen-title { font-size: 2.5rem; }
+  .fullscreen-nft-grid { 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  .fullscreen-content { padding: 1rem; }
+  .fullscreen-stats { grid-template-columns: repeat(2, 1fr); }
+  .fullscreen-stat { padding: 2rem; }
+  .fullscreen-stat-value { font-size: 2.5rem; }
+}
+
+@media (max-width: 480px) {
+  .market-hero h1 { font-size: 2rem; }
+  .fullscreen-title { font-size: 2rem; }
+  .fullscreen-nft-grid { grid-template-columns: 1fr; }
+  .fullscreen-stats { grid-template-columns: 1fr; }
+}
+</style>
+
+<div class="marketplace-wrap">
+  <div class="market-hero">
+    <h1>Premium NFT Collections</h1>
+    <p>Discover exclusive anime-inspired digital collectibles from legendary series</p>
+  </div>
+
+  <div class="collections-grid">
+    <!-- Enhanced collection cards with better data and animations -->
+    <!-- Baki Hanma Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/baki hanma/baki_ E.png" alt="Baki Hanma Collection">
+      </div>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">Baki Hanma</h3>
+          <span class="nft-count">6 NFTs</span>
+        </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">2.5</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">15.2K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+12%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('baki', 'Baki Hanma', '2.5', '15.2K', '+12%', 6)">
+          <span class="btn-text">View Collection</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Search and Filters -->
-    <div class="marketplace-controls">
-      <div class="search-section">
-        <div class="search-box">
-          <i class="fas fa-search"></i>
-          <input type="text" placeholder="Search NFTs..." id="marketplaceSearch" oninput="filterNFTs()">
-        </div>
+    <!-- Death Note Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/Death Note/E.png" alt="Death Note Collection">
       </div>
-      
-      <div class="filter-section">
-        <select id="categoryFilter" onchange="filterNFTs()">
-          <option value="all">All Categories</option>
-          <option value="legendary">Legendary</option>
-          <option value="rare">Rare</option>
-          <option value="common">Common</option>
-          <option value="gaming">Gaming</option>
-          <option value="collectibles">Collectibles</option>
-        </select>
-        
-        <select id="sortFilter" onchange="filterNFTs()">
-          <option value="newest">Newest First</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
-          <option value="popular">Most Popular</option>
-        </select>
-        
-        <div class="view-toggle">
-          <button class="view-btn active" data-view="grid" onclick="toggleView('grid')">
-            <i class="fas fa-th"></i>
-          </button>
-          <button class="view-btn" data-view="list" onclick="toggleView('list')">
-            <i class="fas fa-list"></i>
-          </button>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">Death Note</h3>
+          <span class="nft-count">6 NFTs</span>
         </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">3.8</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">28.7K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+8%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('deathnote', 'Death Note', '3.8', '28.7K', '+8%', 6)">
+          <span class="btn-text">View Collection</span>
+        </button>
       </div>
     </div>
 
-    <!-- NFT Grid -->
-    <div id="nftGrid" class="nft-grid">
-<div id="nftGrid" class="nft-grid">
-  <% nfts.forEach(nft => { %>
-    <div class="nft-card">
-      <img src="<%= nft.imageUrl %>" alt="<%= nft.name %>">
-      <div class="nft-info">
-        <h3><%= nft.name %></h3>
-        <p>Price: <%= nft.price %> ETH</p>
-        <form action="/buy" method="POST">
-          <input type="hidden" name="nftId" value="<%= nft._id %>">
-          <button type="submit" class="btn btn-buy">Buy</button>
-        </form>
+    <!-- Demon Slayer Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/Demon Slayer/epic.png" alt="Demon Slayer Collection">
+      </div>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">Demon Slayer</h3>
+          <span class="nft-count">7 NFTs</span>
+        </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">4.2</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">45.1K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+25%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('demonslayer', 'Demon Slayer', '4.2', '45.1K', '+25%', 7)">
+          <span class="btn-text">View Collection</span>
+        </button>
       </div>
     </div>
-  <% }); %>
+
+    <!-- Naruto Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/Naruto/naruto_ L.png" alt="Naruto Collection">
+      </div>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">Naruto</h3>
+          <span class="nft-count">4 NFTs</span>
+        </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">5.1</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">67.3K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+18%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('naruto', 'Naruto', '5.1', '67.3K', '+18%', 4)">
+          <span class="btn-text">View Collection</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- One Piece Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/One Piece/luffy_legend.png" alt="One Piece Collection">
+      </div>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">One Piece</h3>
+          <span class="nft-count">6 NFTs</span>
+        </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">6.8</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">89.2K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+32%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('onepiece', 'One Piece', '6.8', '89.2K', '+32%', 6)">
+          <span class="btn-text">View Collection</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- One Punch Man Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/One Punch Man/Legend.png" alt="One Punch Man Collection">
+      </div>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">One Punch Man</h3>
+          <span class="nft-count">5 NFTs</span>
+        </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">7.2</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">92.8K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+45%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('onepunchman', 'One Punch Man', '7.2', '92.8K', '+45%', 5)">
+          <span class="btn-text">View Collection</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pokemon Collection -->
+    <div class="collection-card">
+      <div class="collection-banner">
+        <img src="/anime_nfts/Pokemon/ash_epic.png" alt="Pokemon Collection">
+      </div>
+      <div class="collection-body">
+        <div class="collection-header">
+          <h3 class="collection-title">Pokemon</h3>
+          <span class="nft-count">6 NFTs</span>
+        </div>
+        <div class="stats-bar">
+          <div class="stat">
+            <div class="stat-value">8.5</div>
+            <div class="stat-label">Floor</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">156.4K</div>
+            <div class="stat-label">Volume</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value">+67%</div>
+            <div class="stat-label">24h</div>
+          </div>
+        </div>
+        <button class="view-btn" onclick="openCollection('pokemon', 'Pokemon', '8.5', '156.4K', '+67%', 6)">
+          <span class="btn-text">View Collection</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
+<!-- Enhanced fullscreen collection view overlay -->
+<div id="collectionFullscreen" class="collection-fullscreen">
+  <div class="fullscreen-content">
+    <div class="fullscreen-header">
+      <h1 id="fullscreenTitle" class="fullscreen-title">Collection Name</h1>
+      <button class="close-btn" onclick="closeCollection()">✕ Close</button>
+    </div>
+    
+    <div class="fullscreen-stats">
+      <div class="fullscreen-stat">
+        <div id="fullscreenFloor" class="fullscreen-stat-value">0.0</div>
+        <div class="fullscreen-stat-label">Floor Price (XML)</div>
+      </div>
+      <div class="fullscreen-stat">
+        <div id="fullscreenVolume" class="fullscreen-stat-value">0K</div>
+        <div class="fullscreen-stat-label">Total Volume</div>
+      </div>
+      <div class="fullscreen-stat">
+        <div id="fullscreenChange" class="fullscreen-stat-value">0%</div>
+        <div class="fullscreen-stat-label">24h Change</div>
+      </div>
+      <div class="fullscreen-stat">
+        <div id="fullscreenCount" class="fullscreen-stat-value">0</div>
+        <div class="fullscreen-stat-label">Total NFTs</div>
+      </div>
     </div>
 
-    <!-- Load More -->
-    <div class="load-more-section">
-      <button class="btn gradient-btn" onclick="loadMoreNFTs()">Load More NFTs</button>
+    <div id="fullscreenNftGrid" class="fullscreen-nft-grid">
+      <!-- NFTs will be populated here -->
     </div>
   </div>
 </div>
 
 <script>
-  // NFT Data
-  const nftData = [
-    {
-      id: 1,
-      name: 'Dragon Slayer Akira',
-      price: '2.5 ETH',
-      image: 'https://images.pexels.com/photos/7042593/pexels-photo-7042593.jpeg?auto=compress&cs=tinysrgb&w=400',
-      rarity: 'legendary',
-      likes: 342,
-      trending: true,
-      category: 'gaming'
-    },
-    {
-      id: 2,
-      name: 'Mystic Warrior Luna',
-      price: '1.8 ETH',
-      image: 'https://images.pexels.com/photos/7042590/pexels-photo-7042590.jpeg?auto=compress&cs=tinysrgb&w=400',
-      rarity: 'rare',
-      likes: 198,
-      trending: false,
-      category: 'collectibles'
-    },
-    {
-      id: 3,
-      name: 'Shadow Ninja Kai',
-      price: '3.2 ETH',
-      image: 'https://images.pexels.com/photos/7042591/pexels-photo-7042591.jpeg?auto=compress&cs=tinysrgb&w=400',
-      rarity: 'legendary',
-      likes: 456,
-      trending: true,
-      category: 'gaming'
-    },
-    {
-      id: 4,
-      name: 'Crystal Mage Yuki',
-      price: '1.2 ETH',
-      image: 'https://images.pexels.com/photos/7042592/pexels-photo-7042592.jpeg?auto=compress&cs=tinysrgb&w=400',
-      rarity: 'rare',
-      likes: 289,
-      trending: false,
-      category: 'collectibles'
-    },
-    {
-      id: 5,
-      name: 'Fire Phoenix Rei',
-      price: '4.1 ETH',
-      image: 'https://images.pexels.com/photos/7042594/pexels-photo-7042594.jpeg?auto=compress&cs=tinysrgb&w=400',
-      rarity: 'legendary',
-      likes: 678,
-      trending: true,
-      category: 'gaming'
-    },
-    {
-      id: 6,
-      name: 'Storm Archer Hana',
-      price: '0.9 ETH',
-      image: 'https://images.pexels.com/photos/7042595/pexels-photo-7042595.jpeg?auto=compress&cs=tinysrgb&w=400',
-      rarity: 'common',
-      likes: 156,
-      trending: false,
-      category: 'collectibles'
-    }
-  ];
+const collections = {
+  baki: [
+    { name: 'Baki Hanma', image: '/anime_nfts/baki hanma/baki_ E.png', rarity: 'epic', price: '2.8 XML' },
+    { name: 'Biscuit Oliva', image: '/anime_nfts/baki hanma/biscuit _E.png', rarity: 'epic', price: '3.2 XML' },
+    { name: 'Kozue Matsumoto', image: '/anime_nfts/baki hanma/girl _C.png', rarity: 'common', price: '0.8 XML' },
+    { name: 'Shizue Matsumoto', image: '/anime_nfts/baki hanma/girl2_C.png', rarity: 'common', price: '0.9 XML' },
+    { name: 'Yujiro Hanma', image: '/anime_nfts/baki hanma/yujiro _L.png', rarity: 'legendary', price: '12.5 XML' },
+    { name: 'Yujiro Demon Back', image: '/anime_nfts/baki hanma/yujiro2 _R.png', rarity: 'rare', price: '5.8 XML' }
+  ],
+  deathnote: [
+    { name: 'L Lawliet', image: '/anime_nfts/Death Note/E.png', rarity: 'epic', price: '4.2 XML' },
+    { name: 'Ryuk Shinigami', image: '/anime_nfts/Death Note/epic.png', rarity: 'epic', price: '4.8 XML' },
+    { name: 'Misa Amane', image: '/anime_nfts/Death Note/girl_ C.png', rarity: 'common', price: '1.2 XML' },
+    { name: 'Sayu Yagami', image: '/anime_nfts/Death Note/girly_C.png', rarity: 'common', price: '1.1 XML' },
+    { name: 'Light Yagami', image: '/anime_nfts/Death Note/light_ L.png', rarity: 'legendary', price: '15.8 XML' },
+    { name: 'Kira Light', image: '/anime_nfts/Death Note/light2_ L.png', rarity: 'legendary', price: '16.2 XML' }
+  ],
+  demonslayer: [
+    { name: 'Giyu Tomioka', image: '/anime_nfts/Demon Slayer/epic.png', rarity: 'epic', price: '5.2 XML' },
+    { name: 'Kyojuro Rengoku', image: '/anime_nfts/Demon Slayer/epicc.png', rarity: 'epic', price: '5.8 XML' },
+    { name: 'Tengen Uzui', image: '/anime_nfts/Demon Slayer/epiccc.png', rarity: 'epic', price: '5.5 XML' },
+    { name: 'Nezuko Kamado', image: '/anime_nfts/Demon Slayer/girl_R.png', rarity: 'rare', price: '3.2 XML' },
+    { name: 'Kanao Tsuyuri', image: '/anime_nfts/Demon Slayer/girly_ L.png', rarity: 'legendary', price: '18.5 XML' },
+    { name: 'Shinobu Kocho', image: '/anime_nfts/Demon Slayer/girly_ R.png', rarity: 'rare', price: '3.8 XML' },
+    { name: 'Tanjiro Kamado', image: '/anime_nfts/Demon Slayer/tanjiro_L.png', rarity: 'legendary', price: '22.3 XML' }
+  ],
+  naruto: [
+    { name: 'Sakura Haruno', image: '/anime_nfts/Naruto/girl_ c.png', rarity: 'common', price: '1.8 XML' },
+    { name: 'Itachi Uchiha', image: '/anime_nfts/Naruto/itachi._ e.png', rarity: 'epic', price: '8.2 XML' },
+    { name: 'Kakashi Hatake', image: '/anime_nfts/Naruto/kakashi_E.png', rarity: 'epic', price: '7.8 XML' },
+    { name: 'Naruto Uzumaki', image: '/anime_nfts/Naruto/naruto_ L.png', rarity: 'legendary', price: '25.5 XML' }
+  ],
+  onepiece: [
+    { name: 'Roronoa Zoro', image: '/anime_nfts/One Piece/epic.png', rarity: 'epic', price: '8.8 XML' },
+    { name: 'Nami', image: '/anime_nfts/One Piece/girl_ C.png', rarity: 'common', price: '2.2 XML' },
+    { name: 'Nico Robin', image: '/anime_nfts/One Piece/girly_C.png', rarity: 'common', price: '2.5 XML' },
+    { name: 'Monkey D. Luffy', image: '/anime_nfts/One Piece/luffy_legend.png', rarity: 'legendary', price: '35.8 XML' },
+    { name: 'Portgas D. Ace', image: '/anime_nfts/One Piece/rare.png', rarity: 'rare', price: '6.2 XML' },
+    { name: 'Sabo', image: '/anime_nfts/One Piece/raree.png', rarity: 'rare', price: '6.8 XML' }
+  ],
+  onepunchman: [
+    { name: 'Genos', image: '/anime_nfts/One Punch Man/epic.png', rarity: 'epic', price: '9.2 XML' },
+    { name: 'Tatsumaki', image: '/anime_nfts/One Punch Man/girl_rare.png', rarity: 'rare', price: '7.5 XML' },
+    { name: 'Saitama Caped', image: '/anime_nfts/One Punch Man/Legend.png', rarity: 'legendary', price: '42.8 XML' },
+    { name: 'Saitama Serious', image: '/anime_nfts/One Punch Man/Legrand.png', rarity: 'legendary', price: '45.2 XML' },
+    { name: 'Saitama Bald', image: '/anime_nfts/One Punch Man/satama_ L.png', rarity: 'legendary', price: '38.5 XML' }
+  ],
+  pokemon: [
+    { name: 'Ash Ketchum', image: '/anime_nfts/Pokemon/ash_epic.png', rarity: 'epic', price: '12.8 XML' },
+    { name: 'Pokeball', image: '/anime_nfts/Pokemon/common.png', rarity: 'common', price: '3.2 XML' },
+    { name: 'Mewtwo', image: '/anime_nfts/Pokemon/mewtwo _L.png', rarity: 'legendary', price: '58.5 XML' },
+    { name: 'Misty', image: '/anime_nfts/Pokemon/misty_rare.png', rarity: 'rare', price: '8.8 XML' },
+    { name: 'Pikachu', image: '/anime_nfts/Pokemon/pika_ L.png', rarity: 'legendary', price: '65.2 XML' },
+    { name: 'Charizard', image: '/anime_nfts/Pokemon/rare.png', rarity: 'rare', price: '9.5 XML' }
+  ]
+};
 
-  // Initialize marketplace
-  document.addEventListener('DOMContentLoaded', function() {
-    renderNFTs(nftData);
+function openCollection(collectionId, title, floor, volume, change, count) {
+  const fullscreen = document.getElementById('collectionFullscreen');
+  const titleEl = document.getElementById('fullscreenTitle');
+  const floorEl = document.getElementById('fullscreenFloor');
+  const volumeEl = document.getElementById('fullscreenVolume');
+  const changeEl = document.getElementById('fullscreenChange');
+  const countEl = document.getElementById('fullscreenCount');
+  const gridEl = document.getElementById('fullscreenNftGrid');
+
+  // Set collection info
+  titleEl.textContent = title;
+  floorEl.textContent = floor;
+  volumeEl.textContent = volume;
+  changeEl.textContent = change;
+  countEl.textContent = count;
+
+  // Clear and populate NFT grid with staggered animation
+  gridEl.innerHTML = '';
+  const nfts = collections[collectionId] || [];
+  
+  nfts.forEach((nft, index) => {
+    const nftCard = document.createElement('div');
+    nftCard.className = 'fullscreen-nft-card';
+    nftCard.style.animationDelay = `${index * 0.1}s`;
+    nftCard.innerHTML = `
+      <div class="fullscreen-nft-image">
+        <img src="${nft.image}" alt="${nft.name}" loading="lazy">
+        <div class="fullscreen-rarity-badge rarity-${nft.rarity}">${nft.rarity}</div>
+      </div>
+      <div class="fullscreen-nft-info">
+        <div class="fullscreen-nft-name">${nft.name}</div>
+        <div class="fullscreen-nft-price">${nft.price}</div>
+        <button class="fullscreen-buy-btn" onclick="buyNFT('${nft.name}', '${nft.price}')">
+          Buy Now
+        </button>
+      </div>
+    `;
+    gridEl.appendChild(nftCard);
   });
+
+  // Show fullscreen with animation
+  fullscreen.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCollection() {
+  const fullscreen = document.getElementById('collectionFullscreen');
+  fullscreen.classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+function buyNFT(name, price) {
+  // Enhanced buy notification with better styling
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.5);
+    z-index: 10000;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    backdrop-filter: blur(10px);
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  `;
+  
+  notification.innerHTML = `
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+    <div>Purchase Initiated!</div>
+    <div style="font-size: 1rem; opacity: 0.9; margin-top: 0.5rem;">${name} at ${price}</div>
+    <div style="font-size: 0.9rem; opacity: 0.7; margin-top: 1rem;">Connecting to wallet...</div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'popOut 0.3s ease-in forwards';
+    setTimeout(() => document.body.removeChild(notification), 300);
+  }, 3000);
+}
+
+// Enhanced keyboard and click handlers
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeCollection();
+  }
+});
+
+document.getElementById('collectionFullscreen').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeCollection();
+  }
+});
+
+// Add CSS animations for notifications
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes popIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+  
+  @keyframes popOut {
+    from {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.5);
+    }
+  }
+`;
+document.head.appendChild(style);
 </script>
 
 <%- include('../partials/footer') %>

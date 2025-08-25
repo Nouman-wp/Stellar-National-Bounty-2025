@@ -33,8 +33,14 @@ app.use(
 
 
 
+const path = require('path');
 app.set("view engine", "ejs");
-app.use(express.static("client"));
+app.set('views', path.join(__dirname, 'views'));
+// Serve legacy client static files (styles, js) and public assets
+app.use('/css', express.static(path.join(__dirname, 'client', 'css')));
+app.use('/js', express.static(path.join(__dirname, 'client', 'js')));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/anime_nfts', express.static(path.join(__dirname, 'anime_nfts')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 

@@ -1,0 +1,37 @@
+<%- include('../partials/header', { title: collection.name + ' - AniVerse' }) %>
+<%- include('../partials/navbar', { currentPage }) %>
+
+<style>
+  .collection-wrap { max-width:1200px; margin:2rem auto; padding:0 1rem; }
+  .collection-hero { text-align:center; margin-bottom:2rem; }
+  .collection-hero h1 { font-size:2rem; font-weight:700; color:#333; }
+  .nft-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.25rem; }
+  .nft-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 6px 20px rgba(0,0,0,0.08); transition:transform .18s ease; }
+  .nft-card:hover { transform:translateY(-6px); }
+  .nft-img { height:200px; display:flex; align-items:center; justify-content:center; background:#111; }
+  .nft-img img { width:100%; height:100%; object-fit:cover; }
+  .nft-body { padding:1rem; text-align:center; }
+  .nft-name { font-weight:600; color:#333; font-size:1rem; }
+</style>
+
+<div class="collection-wrap">
+  <div class="collection-hero">
+    <h1><%= collection.name %> NFTs</h1>
+    <p>Explore the collection of <%= nfts.length %> NFTs.</p>
+  </div>
+
+  <div class="nft-grid">
+    <% nfts.forEach(nft => { %>
+      <div class="nft-card">
+        <div class="nft-img">
+          <img src="<%= nft.image %>" alt="<%= nft.name %>" onerror="this.onerror=null;this.src='/images/placeholder.png'">
+        </div>
+        <div class="nft-body">
+          <div class="nft-name"><%= nft.name %></div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
