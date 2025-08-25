@@ -1,56 +1,50 @@
-const path = require("path");
-const fs = require("fs");
-const NFT = require("../models/NFT");
-const { uploadFileToPinata, uploadJSONToPinata } = require("../services/pinataService");
-const { mintNFTOnChain } = require("../services/blockchainService");
+const pinataService = require('../services/pinataService');
+const blockchainService = require('../services/blockchainService');
+const NFT = require('../models/NFT');
+const fs = require('fs');
 
-exports.mintNFT = async (req, res) => {
+exports.handleMint = async (req, res) => {
   try {
     const { name, description, tokenId, owner, rarity, price, nftcollection } = req.body;
     const imagePath = req.file.path;
 
-    // 1. Upload image to Pinata
-    const imageUrl = await uploadFileToPinata(imagePath, name);
+    // Upload image to Pinata
+    const imageIPFS = await pinataService.uploadImageToIPFS(imagePath);
 
-    // 2. Create metadata JSON
+    // Prepare metadata
     const metadata = {
       name,
       description,
-      image: imageUrl,
+      image: imageIPFS,
       attributes: [
-        { trait_type: "Rarity", value: rarity },
-        { trait_type: "Collection", value: nftcollection },
+        { trait_type: 'Rarity', value: rarity },
+        { trait_type: 'Collection', value: nftcollection },
       ],
     };
 
-    // 3. Upload metadata JSON to Pinata
-    const metadataUri = await uploadJSONToPinata(metadata, `${name}-metadata`);
+    // Upload metadata to Pinata
+    const metadataURI = await pinataService.uploadJSONToIPFS(metadata);
 
-    // 4. Mint NFT on-chain with tokenURI = metadataUri
-    const txHash = await mintNFTOnChain(owner, metadataUri);
-
-    // 5. Save NFT info in DB
-    const nft = new NFT({
+    // Save to DB
+    const newNFT = new NFT({
+      tokenId,
       name,
       description,
-      tokenId,
       owner,
       rarity,
-      price: price || 0,
+      price,
       collection: nftcollection,
-      imageUrl,
-      metadataUri,
-      txHash,
+      image: imageIPFS,
+      metadataURI
     });
-    await nft.save();
+    await newNFT.save();
 
-    // Cleanup uploaded image file
-    fs.unlinkSync(imagePath);
+    // Mint on Stellar Network
+    await blockchainService.mintNFT(owner, tokenId, metadataURI);
 
-    // Redirect to marketplace page or success page
-    res.redirect("/marketplace");
-  } catch (error) {
-    console.error("Mint error:", error);
-    res.status(500).send("Error minting NFT. Please try again.");
+    res.redirect('/marketplace');
+  } catch (err) {
+    console.error('Minting failed:', err);
+    res.status(500).send('Minting failed.');
   }
 };

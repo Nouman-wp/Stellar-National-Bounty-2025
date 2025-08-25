@@ -1,15 +1,10 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const { mintNFT } = require("../controllers/mintController");
+const multer = require('multer');
+const mintController = require('../controllers/mintController');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname)),
-});
-const upload = multer({ storage });
+const upload = multer({ dest: 'uploads/' });
 
-router.post("/", upload.single("nftImage"), mintNFT);
+router.post('/', upload.single('nftImage'), mintController.handleMint);
 
 module.exports = router;

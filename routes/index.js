@@ -67,12 +67,12 @@ router.get("/dashboard", ensureWallet, async (req, res) => {
 
     const results = await GameResult.find({ user: user._id }).sort({ timestamp: -1 });
 
-    const monadBalance = 100 + Math.floor(user.xp / 10); // dummy logic
+    const stellarBalance = 100 + Math.floor(user.xp / 10); // dummy logic
 
     res.render("pages/dashboard", {
       user,
       results,
-      monadBalance,
+      stellarBalance,
     });
   } catch (err) {
     console.error("Dashboard Error:", err);
