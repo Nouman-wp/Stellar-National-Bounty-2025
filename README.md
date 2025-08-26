@@ -15,11 +15,24 @@ This platform brings anime culture into the blockchain ecosystem, offering colle
 
 ## 🖼️ Platform Preview  
 
-| Home | Marketplace | NFT Detail | Profile |
-|-----------|-------------|------------|---------|
-| ![Home](<https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20052740.png?updatedAt=1756166293584>) | ![Marketplace](<https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20052942.png?updatedAt=1756166404294>) | ![NFT Detail](<https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20053148.png?updatedAt=1756166531039>) | ![Profile](<https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20053335.png?updatedAt=1756166631790>) |
+### 🏠 Home  
+![Home](https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20052740.png?updatedAt=1756166293584)
 
 ---
+
+### 🛒 Marketplace  
+![Marketplace](https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20052942.png?updatedAt=1756166404294)
+
+---
+
+### 🎨 NFT Detail  
+![NFT Detail](https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20053148.png?updatedAt=1756166531039)
+
+---
+
+### 👤 Profile  
+![Profile](https://ik.imagekit.io/jv5oqzl31y/Screenshot%202025-08-26%20053335.png?updatedAt=1756166631790)
+
 
 ## 🛠️ Tech Stack  
 
