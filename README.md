@@ -88,3 +88,138 @@ Built for **anime fans, collectors, and gamers**, it blends culture + blockchain
 ### 2️⃣ Compilation  
 ```bash
 cargo build --target wasm32-unknown-unknown --release
+````
+
+Output → `target/wasm32-unknown-unknown/release/aniverse_contract.wasm`
+
+### 3️⃣ Deployment
+
+```powershell
+soroban contract deploy `
+  --wasm target/wasm32-unknown-unknown/release/aniverse_contract.wasm `
+  --source my_wallet `
+  --network-passphrase "Test SDF Network ;" `
+  --rpc-url https://soroban-testnet.stellar.org
+```
+
+### 4️⃣ Minting Example
+
+```powershell
+soroban contract invoke `
+  --id CONTRACT_ID `
+  --source my_wallet `
+  --rpc-url https://soroban-testnet.stellar.org `
+  --network-passphrase "Test SDF Network ;" `
+  -- mint --to GABC...XYZ --token_id 1 --uri "ipfs://QmPinataHash"
+```
+
+### 5️⃣ Ownership Check
+
+```powershell
+soroban contract invoke `
+  --id CONTRACT_ID `
+  --source my_wallet `
+  --rpc-url https://soroban-testnet.stellar.org `
+  --network-passphrase "Test SDF Network ;" `
+  -- owner_of --token_id 1
+```
+
+---
+
+## 🌐 Deployment Flow
+
+1. **Wallet Setup**
+
+   * Install Freighter Wallet
+   * Fund testnet wallet via Stellar Faucet
+   * Import CLI-generated keys
+
+2. **Smart Contract**
+
+   * Write → Compile → Deploy via Soroban CLI
+
+3. **Storage**
+
+   * Upload artwork → Pinata → get IPFS CID
+   * Attach CID as `metadata_uri`
+
+4. **Backend + DB**
+
+   * Node.js + Express server for APIs
+   * MongoDB stores users, NFTs, collections
+
+5. **Frontend**
+
+   * EJS + TailwindCSS templates
+   * NFT minting form, marketplace, profile
+
+6. **Integration**
+
+   * Freighter Wallet ↔ Stellar
+   * Marketplace invokes Soroban contracts
+
+---
+
+## 📦 Installation & Setup
+
+### Prerequisites
+
+* Node.js + npm
+* Rust + Cargo
+* Soroban CLI
+* Freighter Wallet
+* MongoDB
+
+### Install Project
+
+```bash
+# Backend
+npm install
+
+# Soroban CLI
+cargo install --locked soroban-cli
+```
+
+### Run Local Dev
+
+```bash
+npm run dev
+```
+
+---
+
+## 🎯 Hackathon Scope
+
+✅ End-to-end NFT lifecycle → Mint → Trade → Showcase
+✅ Anime-first NFT marketplace experience
+✅ Gamified quests & play-to-earn NFT unlocks
+✅ Deployed Soroban smart contracts on Stellar testnet
+✅ Fully integrated Freighter Wallet + IPFS storage
+
+---
+
+## 🌟 Why Aniverse?
+
+* ⚡ **Decentralized & Transparent** → Stellar + Soroban power
+* 🎨 **Anime Culture Meets Blockchain** → First anime NFT hub
+* 🎮 **Gamified Ownership** → Earn NFTs via challenges
+* 🤝 **Community Focused** → Built for fans, collectors & gamers
+
+---
+
+##  Future Roadmap
+
+* [ ] Multi-chain NFT support (Stellar + Polygon + Solana)
+* [ ] DAO governance for anime creators & fans
+* [ ] Cross-game NFT interoperability
+* [ ] Mobile-first NFT minting & marketplace
+
+---
+
+## License
+
+MIT License © 2025 — **Team Notion**
+
+
+Do you want me to also add a **badges row** at the top (like build status, tech used, license, etc.) to make it look more professional for GitHub judges?
+```
