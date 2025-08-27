@@ -5,7 +5,9 @@ const server = new stellarSdk.Horizon.Server('https://horizon-testnet.stellar.or
 const AssetCode = 'ANIME'; // Asset code for the NFTs
 const networkPassphrase = stellarSdk.Networks.TESTNET;
 
+const crypto = require("crypto");
 
+// const metadataHash = crypto.createHash("sha256").update(metadataUrl).digest();
 exports.mintNFT = async (to, tokenId, metadataURI) => {
   try {
     const sourceKeypair = stellarSdk.Keypair.fromSecret(process.env.STELLAR_SECRET);
@@ -28,7 +30,7 @@ exports.mintNFT = async (to, tokenId, metadataURI) => {
           amount: "1", // NFTs typically have amount of 1
         })
       )
-      .addMemo(stellarSdk.Memo.text(metadataURI))
+      .addMemo(Memo.text("NFTMint"))
       .setTimeout(30)
       .build();
 

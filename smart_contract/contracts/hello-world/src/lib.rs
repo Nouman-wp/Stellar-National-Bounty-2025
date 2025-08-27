@@ -6,7 +6,7 @@ pub struct NftContract;
 
 #[contractimpl]
 impl NftContract {
-    // Store the owner of each tokenId
+
     pub fn mint(env: Env, to: Address, token_id: u32) {
         let mut store: Map<u32, Address> = env
             .storage()
@@ -14,7 +14,7 @@ impl NftContract {
             .get(&symbol_short!("owners"))
             .unwrap_or(Map::new(&env));
 
-        // ✅ fix: remove &
+
         if store.contains_key(token_id) {
             panic!("Token already minted");
         }
