@@ -1,6 +1,6 @@
 # 🌌 Aniverse NFT Platform
 
-🎥 **Project Demo Video**
+🎥 **Project Demo Video** Click the image below
 
 [![Watch the video](https://img.youtube.com/vi/j-cBZDv13QA/maxresdefault.jpg)](https://www.youtube.com/watch?v=j-cBZDv13QA)
 
