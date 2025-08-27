@@ -8,7 +8,7 @@ const networkPassphrase = stellarSdk.Networks.TESTNET;
 
 exports.mintNFT = async (to, tokenId, metadataURI) => {
   try {
-    const sourceKeypair = stellarSdk.Keypair.fromSecret(process.env.STELLAR_SECRET_KEY);
+    const sourceKeypair = stellarSdk.Keypair.fromSecret(process.env.STELLAR_SECRET);
     const sourceAccount = await server.loadAccount(sourceKeypair.publicKey());
     
     // Create a new asset (NFT) with the metadata
@@ -35,9 +35,11 @@ exports.mintNFT = async (to, tokenId, metadataURI) => {
     transaction.sign(sourceKeypair);
     const result = await server.submitTransaction(transaction);
     console.log(`✅ Minted NFT ${tokenId} to ${to}`);
+    console.log(result.hash);
     return result;
   } catch (error) {
     console.error('Error minting NFT:', error);
     throw error;
   }
+  
 };

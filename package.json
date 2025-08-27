@@ -10,6 +10,7 @@
   "author": "Nouman_wp",
   "license": "ISC",
   "dependencies": {
+    "@stellar/freighter-api": "^4.1.0",
     "@stellar/stellar-sdk": "^14.1.0",
     "axios": "^1.9.0",
     "body-parser": "^2.2.0",

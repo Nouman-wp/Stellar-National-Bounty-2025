@@ -4,7 +4,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const PINATA_API_KEY = process.env.PINATA_API_KEY;
-const PINATA_SECRET = process.env.PINATA_SECRET;
+const PINATA_SECRET = process.env.PINATA_SECRET_API_KEY;
 
 exports.uploadImageToIPFS = async (filePath) => {
   const data = new FormData();

@@ -22,9 +22,10 @@
 
       <!-- Wallet Connection -->
       <div class="wallet-section">
-        <button id="connectBtn" class="wallet-btn gradient-btn" onclick="connectWallet()">
+        <!-- Updated button to show wallet address when connected -->
+        <button id="connectBtn" class="wallet-btn gradient-btn" onclick="openWalletModal()">
           <i class="fas fa-wallet"></i>
-          <span>Connect Wallet</span>
+          <span id="connectBtnText">Connect Wallet</span>
         </button>
 
         <div id="walletProfile" class="wallet-profile hidden" onclick="toggleWalletMenu()">
@@ -34,6 +35,7 @@
           <div class="wallet-info">
             <span id="walletAddress" class="wallet-address"></span>
             <span class="wallet-label">Wallet Connected</span>
+            <span id="walletType" class="wallet-type"></span>
           </div>
           <i class="fas fa-chevron-down dropdown-arrow"></i>
         </div>
@@ -58,6 +60,73 @@
   </div>
 </nav>
 
+<!-- Wallet Selection Modal -->
+<div id="walletModal" class="wallet-modal-overlay">
+  <div class="wallet-modal-content">
+    <div class="wallet-modal-header">
+      <h3>Connect Your Wallet</h3>
+      <span class="wallet-modal-close" onclick="closeWalletModal()">&times;</span>
+    </div>
+    <p class="wallet-modal-subtitle">Choose your preferred wallet to connect to AniVerse</p>
+    
+    <div class="wallet-options">
+      <!-- Freighter Wallet (Stellar) - Primary Option -->
+      <button class="wallet-option primary" onclick="connectFreighter()">
+        <div class="wallet-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <div class="wallet-info-modal">
+          <h4>Freighter Wallet</h4>
+          <p>Stellar blockchain wallet - Recommended</p>
+          <span class="wallet-badge">Stellar Network</span>
+        </div>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+
+      <!-- Other Wallet Options -->
+      <button class="wallet-option" onclick="connectMetaMask()">
+        <div class="wallet-icon">
+          <i class="fab fa-ethereum"></i>
+        </div>
+        <div class="wallet-info-modal">
+          <h4>MetaMask</h4>
+          <p>Ethereum and EVM compatible</p>
+          <span class="wallet-badge">Ethereum</span>
+        </div>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+
+      <button class="wallet-option" onclick="connectWalletConnect()">
+        <div class="wallet-icon">
+          <i class="fas fa-link"></i>
+        </div>
+        <div class="wallet-info-modal">
+          <h4>WalletConnect</h4>
+          <p>Connect with mobile wallets</p>
+          <span class="wallet-badge">Multi-chain</span>
+        </div>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+
+      <button class="wallet-option" onclick="connectPhantom()">
+        <div class="wallet-icon">
+          <i class="fas fa-ghost"></i>
+        </div>
+        <div class="wallet-info-modal">
+          <h4>Phantom</h4>
+          <p>Solana blockchain wallet</p>
+          <span class="wallet-badge">Solana</span>
+        </div>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <div class="wallet-modal-footer">
+      <p>New to crypto wallets? <a href="#" onclick="showWalletGuide()">Learn how to get started</a></p>
+    </div>
+  </div>
+</div>
+
 <!-- Wallet Dropdown (positioned on body) -->
 <div id="walletDropdown" class="wallet-dropdown-overlay hidden">
   <div class="wallet-menu">
@@ -67,6 +136,7 @@
       </div>
       <div class="wallet-details">
         <span id="walletAddressFull" class="wallet-address-full"></span>
+        <span id="walletTypeFull" class="wallet-type-full"></span>
         <button class="copy-btn" onclick="copyWalletAddress()">
           <i class="fas fa-copy"></i>
           Copy
@@ -117,80 +187,261 @@
 
 <script>
   let currentWalletAddress = '';
+  let currentWalletType = '';
 
-  async function connectWallet() {
-    if (!window.ethereum) {
-      showNotification("MetaMask not found. Install it to continue.", "error");
-      return;
-    }
+  // Wallet Modal Functions
+  function openWalletModal() {
+    const modal = document.getElementById("walletModal");
+    modal.style.display = "flex";
+    document.body.style.overflow = "hidden";
+  }
 
+  function closeWalletModal() {
+    const modal = document.getElementById("walletModal");
+    modal.style.display = "none";
+    document.body.style.overflow = "auto";
+  }
+
+  // Freighter Wallet Connection (Stellar)
+  async function connectFreighter() {
     try {
+      if (!window.freighterApi) {
+        showNotification("Freighter wallet not found. Please install it to continue.", "error");
+        window.open("https://www.freighter.app/", "_blank");
+        return;
+      }
+
+      // Request access to Freighter wallet
+      const { publicKey } = await window.freighterApi.requestAccess();
+      
+      if (publicKey) {
+        currentWalletAddress = publicKey;
+        currentWalletType = 'Freighter';
+        
+        // Update UI immediately with wallet address
+        updateWalletUI(publicKey, 'Freighter', 'Stellar');
+        closeWalletModal();
+
+        // Store wallet info in localStorage for persistence
+        localStorage.setItem('walletAddress', publicKey);
+        localStorage.setItem('walletType', 'Freighter');
+        localStorage.setItem('walletNetwork', 'Stellar');
+
+        // Login with backend session
+        try {
+          const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              walletAddress: publicKey, 
+              walletType: 'freighter',
+              network: 'stellar'
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            console.log("Freighter wallet connected and logged in:", data);
+            showNotification(`Connected: ${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`, "success");
+            
+            if (data.redirectToDashboard) {
+              window.location.href = "/dashboard";
+            }
+          } else {
+            // Even if backend login fails, show the wallet as connected
+            showNotification(`Freighter connected: ${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`, "success");
+          }
+        } catch (backendError) {
+          console.error("Backend login error:", backendError);
+          // Still show wallet as connected even if backend fails
+          showNotification(`Freighter connected: ${publicKey.slice(0, 6)}...${publicKey.slice(-4)}`, "success");
+        }
+      }
+    } catch (err) {
+      console.error("Freighter connection error:", err);
+      if (err.message.includes('User declined access')) {
+        showNotification("Connection cancelled by user", "info");
+      } else {
+        showNotification("Failed to connect Freighter wallet. Please try again.", "error");
+      }
+    }
+  }
+
+  // MetaMask Connection
+  async function connectMetaMask() {
+    try {
+      if (!window.ethereum) {
+        showNotification("MetaMask not found. Please install it to continue.", "error");
+        window.open("https://metamask.io/", "_blank");
+        return;
+      }
+
       const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
       const walletAddress = accounts[0];
       currentWalletAddress = walletAddress;
+      currentWalletType = 'MetaMask';
 
-      // Update UI
-      updateWalletUI(walletAddress);
+      updateWalletUI(walletAddress, 'MetaMask', 'Ethereum');
+      closeWalletModal();
 
-      // Login with backend session
       const res = await fetch("/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ walletAddress })
+        body: JSON.stringify({ 
+          walletAddress, 
+          walletType: 'metamask',
+          network: 'ethereum'
+        })
       });
 
       if (!res.ok) throw new Error("Login failed");
 
       const data = await res.json();
-      console.log("User session created:", data);
+      showNotification("MetaMask connected successfully!", "success");
 
-      showNotification("Wallet connected successfully!", "success");
-
-      // Optional: redirect if needed
       if (data.redirectToDashboard) {
         window.location.href = "/dashboard";
       }
 
     } catch (err) {
-      console.error("Auth error:", err);
-      showNotification("Wallet connection failed. Please try again.", "error");
+      console.error("MetaMask connection error:", err);
+      showNotification("MetaMask connection failed. Please try again.", "error");
     }
   }
 
-  function updateWalletUI(walletAddress) {
+  // WalletConnect (placeholder)
+  async function connectWalletConnect() {
+    showNotification("WalletConnect integration coming soon!", "info");
+  }
+
+  // Phantom Wallet (placeholder)
+  async function connectPhantom() {
+    try {
+      if (!window.solana || !window.solana.isPhantom) {
+        showNotification("Phantom wallet not found. Please install it to continue.", "error");
+        window.open("https://phantom.app/", "_blank");
+        return;
+      }
+
+      const response = await window.solana.connect();
+      const publicKey = response.publicKey.toString();
+      
+      currentWalletAddress = publicKey;
+      currentWalletType = 'Phantom';
+      
+      updateWalletUI(publicKey, 'Phantom', 'Solana');
+      closeWalletModal();
+      
+      showNotification("Phantom wallet connected successfully!", "success");
+    } catch (err) {
+      console.error("Phantom connection error:", err);
+      showNotification("Failed to connect Phantom wallet. Please try again.", "error");
+    }
+  }
+
+  function updateWalletUI(walletAddress, walletType, network) {
     const profileImageUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${walletAddress}`;
-    const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+    const shortAddress = `${walletAddress.slice(0, 3)}...${walletAddress.slice(-3)}`;
     const mediumAddress = `${walletAddress.slice(0, 10)}...${walletAddress.slice(-6)}`;
 
-    document.getElementById("connectBtn").style.display = "none";
+    // Update connect button to show wallet address
+    document.getElementById("connectBtnText").textContent = shortAddress;
+    document.getElementById("connectBtn").onclick = toggleWalletMenu;
+    
+    // Show wallet profile for dropdown menu
     document.getElementById("walletProfile").classList.remove("hidden");
 
     document.getElementById("profileImage").src = profileImageUrl;
     document.getElementById("profileImageLarge").src = profileImageUrl;
     document.getElementById("walletAddress").textContent = shortAddress;
     document.getElementById("walletAddressFull").textContent = mediumAddress;
+    document.getElementById("walletType").textContent = walletType;
+    document.getElementById("walletTypeFull").textContent = `${walletType} • ${network}`;
   }
 
+  // Updated disconnectWallet to reset connect button to original state
   function disconnectWallet() {
+    // Clear localStorage
+    localStorage.removeItem('walletAddress');
+    localStorage.removeItem('walletType');
+    localStorage.removeItem('walletNetwork');
+    
     fetch("/auth/logout").then(() => {
-      // Clear UI
       currentWalletAddress = '';
-      document.getElementById("connectBtn").style.display = "flex";
+      currentWalletType = '';
+      document.getElementById("connectBtnText").textContent = "Connect Wallet";
+      document.getElementById("connectBtn").onclick = openWalletModal;
       document.getElementById("walletProfile").classList.add("hidden");
       document.getElementById("walletDropdown").classList.add("hidden");
       document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
 
       showNotification("Wallet disconnected", "info");
+    }).catch(() => {
+      currentWalletAddress = '';
+      currentWalletType = '';
+      document.getElementById("connectBtnText").textContent = "Connect Wallet";
+      document.getElementById("connectBtn").onclick = openWalletModal;
+      document.getElementById("walletProfile").classList.add("hidden");
+      document.getElementById("walletDropdown").classList.add("hidden");
+      document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
+      
+      showNotification("Wallet disconnected", "info");
     });
   }
 
   async function checkWalletConnection() {
-    if (window.ethereum) {
+    // Check localStorage for previous connection
+    const savedAddress = localStorage.getItem('walletAddress');
+    const savedType = localStorage.getItem('walletType');
+    const savedNetwork = localStorage.getItem('walletNetwork');
+
+    if (savedAddress && savedType === 'Freighter') {
+      // Verify Freighter is still connected
+      if (window.freighterApi) {
+        try {
+          const { publicKey } = await window.freighterApi.getPublicKey();
+          if (publicKey === savedAddress) {
+            currentWalletAddress = publicKey;
+            currentWalletType = 'Freighter';
+            updateWalletUI(publicKey, 'Freighter', 'Stellar');
+            return;
+          }
+        } catch (err) {
+          // Freighter not connected anymore, clear localStorage
+          localStorage.removeItem('walletAddress');
+          localStorage.removeItem('walletType');
+          localStorage.removeItem('walletNetwork');
+        }
+      }
+    }
+    
+    // Check for new Freighter connection
+    if (window.freighterApi && !currentWalletAddress) {
+      try {
+        const { publicKey } = await window.freighterApi.getPublicKey();
+        if (publicKey) {
+          currentWalletAddress = publicKey;
+          currentWalletType = 'Freighter';
+          updateWalletUI(publicKey, 'Freighter', 'Stellar');
+          
+          // Save to localStorage
+          localStorage.setItem('walletAddress', publicKey);
+          localStorage.setItem('walletType', 'Freighter');
+          localStorage.setItem('walletNetwork', 'Stellar');
+        }
+      } catch (err) {
+        // Freighter not connected
+      }
+    }
+    
+    // Check MetaMask if no Freighter connection
+    if (window.ethereum && !currentWalletAddress) {
       try {
         const accounts = await ethereum.request({ method: "eth_accounts" });
         if (accounts.length > 0) {
           currentWalletAddress = accounts[0];
-          updateWalletUI(currentWalletAddress);
+          currentWalletType = 'MetaMask';
+          updateWalletUI(currentWalletAddress, 'MetaMask', 'Ethereum');
         }
       } catch (err) {
         console.error("Wallet check failed:", err);
@@ -231,6 +482,13 @@
     }).catch(() => {
       showNotification("Failed to copy address", "error");
     });
+  }
+
+  function showWalletGuide() {
+    closeWalletModal();
+    showNotification("Opening wallet setup guide...", "info");
+    // You can redirect to a guide page or open a tutorial modal
+    window.open("/wallet-guide", "_blank");
   }
 
   function toggleMobileMenu() {
@@ -278,26 +536,46 @@
     }, 4000);
   }
 
-  // Close dropdown on outside click
+  // Close modals on outside click
   document.addEventListener("click", (event) => {
     const walletSection = document.querySelector(".wallet-section");
     const walletDropdown = document.getElementById("walletDropdown");
+    const walletModal = document.getElementById("walletModal");
+    
     if (!walletSection.contains(event.target)) {
       walletDropdown.classList.add("hidden");
       document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
+    }
+
+    if (event.target === walletModal) {
+      closeWalletModal();
     }
   });
 
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") {
       closeSearchModal();
+      closeWalletModal();
       document.getElementById("walletDropdown").classList.add("hidden");
       document.querySelector(".dropdown-arrow")?.classList.remove("rotated");
     }
   });
 
-  // Auto check wallet on page load
-  window.addEventListener("load", checkWalletConnection);
+  document.addEventListener('DOMContentLoaded', function() {
+    checkWalletConnection();
+    
+    // Listen for Freighter account changes
+    if (window.freighterApi) {
+      window.freighterApi.on('accountChanged', (publicKey) => {
+        if (publicKey && currentWalletType === 'Freighter') {
+          currentWalletAddress = publicKey;
+          updateWalletUI(publicKey, 'Freighter', 'Stellar');
+          localStorage.setItem('walletAddress', publicKey);
+          showNotification("Freighter account changed", "info");
+        }
+      });
+    }
+  });
 </script>
 
 <style>
@@ -349,7 +627,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  min-width: 200px;
+  min-width: 220px;
 }
 
 .wallet-profile:hover {
@@ -380,7 +658,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.125rem;
 }
 
 .wallet-address {
@@ -396,6 +674,12 @@
   letter-spacing: 0.5px;
 }
 
+.wallet-type {
+  color: #a855f7;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
 .dropdown-arrow {
   color: #a1a1aa;
   font-size: 0.75rem;
@@ -404,6 +688,193 @@
 
 .dropdown-arrow.rotated {
   transform: rotate(180deg);
+}
+
+/* Wallet Modal Styles */
+.wallet-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(5px);
+  z-index: 999999;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.wallet-modal-content {
+  background: linear-gradient(135deg, #1e293b 0%, #4c1d95 50%, #1e293b 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.wallet-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.wallet-modal-header h3 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.wallet-modal-close {
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #9ca3af;
+  transition: color 0.3s ease;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.wallet-modal-close:hover {
+  color: #ffffff;
+}
+
+.wallet-modal-subtitle {
+  color: #a1a1aa;
+  margin: 0 0 2rem 0;
+  font-size: 0.9rem;
+}
+
+.wallet-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.wallet-option {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.wallet-option:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-2px);
+}
+
+.wallet-option.primary {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(124, 58, 237, 0.2));
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.wallet-option.primary:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(124, 58, 237, 0.3));
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+.wallet-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.wallet-info-modal {
+  flex: 1;
+}
+
+.wallet-info-modal h4 {
+  margin: 0 0 0.25rem 0;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.wallet-info-modal p {
+  margin: 0 0 0.5rem 0;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.wallet-badge {
+  display: inline-block;
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.wallet-option i:last-child {
+  color: #a1a1aa;
+  font-size: 16px;
+  transition: transform 0.3s ease;
+}
+
+.wallet-option:hover i:last-child {
+  transform: translateX(4px);
+  color: #a855f7;
+}
+
+.wallet-modal-footer {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.wallet-modal-footer p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.wallet-modal-footer a {
+  color: #a855f7;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.wallet-modal-footer a:hover {
+  color: #ffffff;
 }
 
 /* Wallet Dropdown Overlay - Positioned on Body */
@@ -429,8 +900,8 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  width: 280px;
-  max-width: 280px;
+  width: 300px;
+  max-width: 300px;
   animation: slideDown 0.3s ease;
   backdrop-filter: blur(10px);
 }
@@ -486,6 +957,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.wallet-type-full {
+  color: #a855f7;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .copy-btn {
@@ -740,9 +1217,14 @@
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
+  .wallet-modal-content {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
   .wallet-dropdown-overlay .wallet-menu {
-    width: 260px;
-    max-width: 260px;
+    width: 280px;
+    max-width: 280px;
     margin: 0 1rem;
   }
   
@@ -758,7 +1240,7 @@
   }
   
   .wallet-profile {
-    min-width: 150px;
+    min-width: 180px;
     padding: 0.75rem;
   }
   
@@ -774,8 +1256,22 @@
     font-size: 0.7rem;
   }
   
+  .wallet-type {
+    font-size: 0.65rem;
+  }
+  
   .wallet-address-full {
     max-width: 140px;
+  }
+  
+  .wallet-option {
+    padding: 1rem;
+  }
+  
+  .wallet-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 }
 </style>
