@@ -1,6 +1,9 @@
 # 🌌 Aniverse NFT Platform
 
-🎥 **Project Demo Video** → [Watch Here](https://www.youtube.com/watch?v=j-cBZDv13QA)  
+🎥 **Project Demo Video**
+
+[![Watch the video](https://img.youtube.com/vi/j-cBZDv13QA/maxresdefault.jpg)](https://www.youtube.com/watch?v=j-cBZDv13QA)
+
 
 ---
 
@@ -88,3 +91,114 @@ This platform brings anime culture into the blockchain ecosystem, offering colle
 - ✅ **Community Focused** – built for anime fans, collectors, and gamers  
 
 ---
+
+🔗 Smart Contract Workflow
+1️⃣ Contract Setup
+
+Written in Rust using Soroban SDK.
+
+Functions include:
+
+mint(token_id, owner, metadata_uri)
+
+transfer(token_id, from, to)
+
+owner_of(token_id)
+
+2️⃣ Compilation
+cargo build --target wasm32-unknown-unknown --release
+
+
+Output → target/wasm32-unknown-unknown/release/aniverse_contract.wasm
+
+3️⃣ Deployment
+soroban contract deploy `
+  --wasm target/wasm32-unknown-unknown/release/aniverse_contract.wasm `
+  --source my_wallet `
+  --network-passphrase "Test SDF Network ;" `
+  --rpc-url https://soroban-testnet.stellar.org
+
+4️⃣ Minting Example
+soroban contract invoke `
+  --id CONTRACT_ID `
+  --source my_wallet `
+  --rpc-url https://soroban-testnet.stellar.org `
+  --network-passphrase "Test SDF Network ;" `
+  -- mint --to GABC...XYZ --token_id 1 --uri "ipfs://QmPinataHash"
+
+5️⃣ Ownership Check
+soroban contract invoke `
+  --id CONTRACT_ID `
+  --source my_wallet `
+  --rpc-url https://soroban-testnet.stellar.org `
+  --network-passphrase "Test SDF Network ;" `
+  -- owner_of --token_id 1
+
+🌐 Deployment Flow
+
+Wallet Setup
+
+Install Freighter Wallet.
+
+Get Testnet XLM from Stellar Faucet
+.
+
+Import wallet secret from CLI-generated keys.
+
+Smart Contract
+
+Write → Compile → Deploy via Soroban CLI.
+
+Storage
+
+Upload NFT artwork → Pinata → Get IPFS CID.
+
+Attach CID as metadata_uri.
+
+Backend + DB
+
+Node.js + Express server for API.
+
+MongoDB stores users, NFTs, collections.
+
+Frontend
+
+EJS templates with Tailwind CSS.
+
+NFT minting form, marketplace, profile.
+
+Integration
+
+Freighter Wallet connects frontend with Stellar.
+
+Marketplace calls backend → invokes Soroban contracts.
+
+📦 Installation & Setup
+Prerequisites
+
+Node.js + npm
+
+Rust + Cargo
+
+Soroban CLI
+
+Freighter Wallet
+
+MongoDB
+
+Install Project
+# Backend
+npm install
+
+# Soroban CLI
+cargo install --locked soroban-cli
+
+Run Local Dev
+npm run dev
+
+🎯 Hackathon Scope
+
+✅ End-to-end NFT lifecycle: Mint → Trade → Showcase
+✅ Anime-first NFT experience
+✅ Gamification for community engagement
+✅ Deployed Soroban smart contracts on Stellar testnet
